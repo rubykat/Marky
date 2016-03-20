@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="<%= url_for('/styles') %>/layout/layout_flex.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" title="default" href="<%= url_for('/styles') %>/themes/theme_<%= $theme %>.css"/>
+    <link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />
+
+    <!-- Grab jQuery from a CDN, fall back to local if necessary -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript">/* <![CDATA[ */
+        !window.jQuery && document.write('<script type="text/javascript" src="<%= url_for("/styles/") %>/j/jquery.js"><\/script>')
+        /* ]]> */</script>
+</head>
+<body>
+<div id="page-wrap">
+    <header>
+    <div id="kslogo" class="logo"><a href="/">Home</a></div>
+    
+    <nav>
+        <ul><li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    
+    <div class="breadcrumb"><%== $breadcrumb %></div>
+  </header>
+  
+  <div id="inner">
+    <div id="main-wrap">
+        <main>
+            <%== content %>
+      </main>
+    </div> <!-- /main-wrap -->
+    <div class="left-side-wrap">
+        <div class="side">
+          <nav>
+              <%== $sidenav %>
+          </nav>
+        </div> <!-- /side -->
+    </div> <!-- /left-side-wrap -->
+
+    <div class="right-side-wrap">
+      <div class="side">
+          <%== $rightside %>
+      </div> <!-- /side -->
+    </div> <!-- /right-side-wrap -->
+
+  </div> <!-- /inner -->
+    <div id="footer-wrap">
+        <footer>
+            <%== $footer %>
+      </footer>
+    </div> <!-- /footer-wrap -->
+</div> <!-- /page-wrap -->
+</body>
+</html>

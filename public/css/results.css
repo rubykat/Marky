@@ -1,0 +1,112 @@
+/*
+ * Formatting the results of the searches
+ */
+.dblist {
+    margin-top 0.5em;
+    margin-bottom: 0.5em;
+}
+.side nav .dblist ul {
+    list-style: circle inside;
+}
+.query {
+    margin-bottom: 0.5em;
+}
+.query form {
+    display: inline-block;
+}
+.searchform {
+    padding: 0.5em;
+    background: rgba(0,0,0,0.25);
+}
+.searchform form {
+    display: inline-block;
+    margin: 0;
+}
+.results {
+    padding: 0;
+}
+
+.results>ul {
+    margin: 1em;
+    list-style: none;
+    padding-left: 0;
+}
+
+.results p,
+.results table {
+    background: rgba(220,220,220,0.8);
+    margin: 0;
+    padding: 0.5em;
+}
+
+.results li.private {
+    background: rgba(180,180,180,0.2);
+}
+
+.results li .linktitle {
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+.results li .linkdescription {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: normal;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.results li .thumbnail {
+    float: right;
+    margin: 0px 10px 0px 10px;
+}
+
+.results li .thumbnail img {
+    border-radius: 3px;
+    box-shadow: 0.5px 0.5px 0.5px 1px #ddd;
+    height: 150px;
+}
+
+.results li .category {
+    font-style: italic;
+}
+
+.results li .linkfile {
+    font-size: 8pt;
+    display: inline-block;
+}
+
+.results li .linkurl {
+    font-size: 9pt;
+    display: inline-block;
+}
+
+.linktaglist {
+    font-size: 0.9em;
+    clear: both;
+}
+.linktaglist form {
+    display: inline-block;
+}
+
+.linktaglist input[type=submit],
+.linktaglist a.button {
+    border-radius: 3px;
+}
+
+.fanfic .linkdescription {
+    font-style: italic;
+}
+.fanfic .review {
+    font-size: 95%;
+}
+
+#alltags {
+    -moz-column-count: 3;
+    column-count: 3;
+    -moz-column-width: 18em;
+    column-width: 20em;
+}
+.side #alltags {
+    font-size: 90%;
+}
