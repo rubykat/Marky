@@ -149,10 +149,14 @@ sub _set_looks {
     {
         $c->stash(breadcrumb => "<a href='/'>Home</a> &gt; <a href='$url'>$url</a>");
     }
+
+    my $db = $c->param('db');
     my $theme = $c->session('theme');
     $theme = 'silver' if !$theme;
     $c->stash(theme=>$theme);
-    my $opt_url = $c->url_for('/opt');
+    my $opt_url = $c->url_for(
+        ($db ?  "/db/$db/opt" : "/opt")
+    );
     my $theme_sel = $self->_make_theme_selector(
         current_theme=>$theme,
         opt_url=>$opt_url,

@@ -162,7 +162,7 @@ sub _do_query {
         $c->param('tags'=>$tags);
         $c->param(deltag=>undef);
     }
-    my $opt_url = $c->url_for('/opt');
+    my $opt_url = $c->url_for("/db/$db/opt");
     my $location = $c->url_for("/db/$db");
     my $res = $self->{dbtables}->{$db}->query(location=>$location,
         opt_url=>$opt_url,
@@ -259,7 +259,7 @@ sub _taglist {
     my %args = @_;
 
     my $db = $c->param('db');
-    my $opt_url = $c->url_for('/opt');
+    my $opt_url = $c->url_for("/db/$db/opt");
     my $location = $c->url_for("/db/$db");
     my $res = $self->{dbtables}->{$db}->taglist(location=>$location,
         opt_url=>$opt_url,
@@ -284,7 +284,7 @@ sub _tagcloud {
     my %args = @_;
 
     my $db = $c->param('db');
-    my $opt_url = $c->url_for('/opt');
+    my $opt_url = $c->url_for("/db/$db/opt");
     my $location = $c->url_for("/db/$db");
     my $res = $self->{dbtables}->{$db}->tagcloud(location=>$location,
         opt_url=>$opt_url,

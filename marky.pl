@@ -38,12 +38,18 @@ get '/' => sub {
     $c->marky->display_tables();
   };
 
-# options set with query params
 get '/opt' => sub {
     my $c  = shift;
     $c->marky->set_looks();
-    $c->marky->set_options($c);
+    $c->marky->set_options();
   };
+
+get '/db/:db/opt' => sub {
+    my $c  = shift;
+    $c->marky->set_looks();
+    $c->marky->set_options();
+  };
+
 
 get '/db/:db/taglist' => sub {
     my $c  = shift;
@@ -68,6 +74,7 @@ get '/db/:db/tags/:tags' => sub {
     $c->marky->set_looks();
     $c->marky->do_query();
   };
+
 
 # ============================================================================
 
