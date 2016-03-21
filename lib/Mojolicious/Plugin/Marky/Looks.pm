@@ -1,8 +1,8 @@
-package Mojolicious::Plugin::Marky::Themes;
+package Mojolicious::Plugin::Marky::Looks;
 
 =head1 NAME
 
-Mojolicious::Plugin::Marky::Themes - themes for app
+Mojolicious::Plugin::Marky::Looks - looks for app
 
 =head1 VERSION
 
@@ -14,13 +14,14 @@ our $VERSION = '0.1';
 
 =head1 SYNOPSIS
 
-    use Mojolicious::Plugin::Marky::Themes;
+    use Mojolicious::Plugin::Marky::Looks;
 
 =head1 DESCRIPTION
 
 Bookmarking and Tutorial Library application.
 Pretty themes; putting them in the application
-instead of in javascript. I think it might be faster this way.
+instead of in javascript; it's faster this way.
+Also other looks like breadcrumbs and other header stuff.
 
 =cut
 
@@ -133,6 +134,58 @@ sub _make_theme_selector {
     return $out;
 } # _make_theme_selector
 
+=head2 _make_navbar
+
+Top-level navigation.
+The difficulty with this is that using a reverse-proxy means that
+all relative-ish URLs will be rewritten to be relative to this app.
+So we need to take account of the host the request is coming from.
+Absolute full URLs shouldn't be re-written.
+
+=cut
+
+sub _make_navbar {
+    my $self = shift;
+    my $c = shift;
+    my %args = @_;
+
+    my $rhost = $c->req->headers->host;
+    my $nb_host = $rhost;
+    if (exists $c->config->{vhosts}->{$rhost}->{navbar_host})
+    {
+        $nb_host = $c->config->{vhosts}->{$rhost}->{navbar_host};
+    }
+    my @out = ();
+    push @out, '<nav>';
+    push @out, '<ul>';
+    # we start always with Home
+    push @out, "<li><a href='http://$nb_host/'>Home</a></li>";
+    if (exists $c->config->{vhosts}->{$rhost}->{navbar_links})
+    {
+        foreach my $link (@{$c->config->{vhosts}->{$rhost}->{navbar_links}})
+        {
+            my $name = $link;
+            if ($link =~ m{(\w+)/?$})
+            {
+                $name = ucfirst(lc($1));
+            }
+            if ($link =~ /^http/)
+            {
+                push @out, "<li><a href='${link}'>$name</a></li>";
+            }
+            else
+            {
+                push @out, "<li><a href='http://${nb_host}${link}'>$name</a></li>";
+            }
+        }
+    }
+    push @out, '</ul>';
+    push @out, '</nav>';
+
+    my $out = join("\n", @out);
+    return $out;
+} # _make_navbar
+
 =head2 _set_looks
 
 For selecting themes.
@@ -145,10 +198,22 @@ sub _set_looks {
     my %args = @_;
 
     my $url = $c->req->headers->referrer;
+    my $rhost = $c->req->headers->host;
+    my $logoid = 'logo';
+    my $hostname = $rhost;
+    if (exists $c->config->{vhosts}->{$rhost})
+    {
+        $hostname = $c->config->{vhosts}->{$rhost}->{name};
+        $logoid = $c->config->{vhosts}->{$rhost}->{logoid};
+    }
+    my $breadcrumb = "<b>$hostname</b> <a href='/'>Home</a>";
     if (defined $url)
     {
-        $c->stash(breadcrumb => "<a href='/'>Home</a> &gt; <a href='$url'>$url</a>");
+        $breadcrumb .= " &gt; <a href='$url'>$url</a>";
     }
+    $c->stash(breadcrumb => $breadcrumb);
+    $c->stash(logoid => $logoid);
+    $c->stash(navbar => $self->_make_navbar($c,%args));
 
     my $db = $c->param('db');
     my $theme = $c->session('theme');
@@ -164,5 +229,5 @@ sub _set_looks {
     $c->stash(rightside=>$theme_sel);
 } # _set_looks
 
-1; # End of Mojolicious::Plugin::Marky::Themes
+1; # End of Mojolicious::Plugin::Marky::Looks
 __END__

@@ -308,7 +308,10 @@ sub _set_options {
     my $c  = shift;
     my %args = @_;
 
-    # set options for things like n
+    # Set options for things like n
+    # Note that we don't delete old values
+    # because this can be called with different sets of values
+    # For example the themes are called by themselves on a different form
     my @db = (sort keys %{$self->{dbtables}});
 
     my @fields = (qw(n theme));
@@ -324,10 +327,6 @@ sub _set_options {
         if ($val)
         {
             $c->session->{$field} = $val;
-        }
-        else
-        {
-            delete $c->session->{$field};
         }
     }
     $c->redirect_to($c->req->headers->referrer);

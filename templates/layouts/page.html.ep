@@ -16,41 +16,38 @@
 <body>
 <div id="page-wrap">
     <header>
-    <div id="kslogo" class="logo"><a href="/">Home</a></div>
-    
-    <nav>
-        <ul><li><a href="/">Home</a></li>
-        </ul>
-    </nav>
-    
-    <div class="breadcrumb"><%== $breadcrumb %></div>
-  </header>
+        <div id="header_top">
+            <div id="<%= $logoid %>" class="logo"><a href="/">Home</a></div>
+            <%== $navbar %>
+        </div> <!-- /header_top -->
+        <div class="breadcrumb"><%== $breadcrumb %></div>
+    </header>
   
-  <div id="inner">
-    <div id="main-wrap">
-        <main>
-            <%== content %>
-      </main>
-    </div> <!-- /main-wrap -->
-    <div class="left-side-wrap">
-        <div class="side">
-          <nav>
-              <%== $sidenav %>
-          </nav>
-        </div> <!-- /side -->
-    </div> <!-- /left-side-wrap -->
+    <div id="inner">
+        <div id="main-wrap">
+            <main>
+                <%== content %>
+            </main>
+        </div> <!-- /main-wrap -->
+        <div class="left-side-wrap">
+            <div class="side">
+                <nav>
+                    <%== $sidenav %>
+                </nav>
+            </div> <!-- /side -->
+        </div> <!-- /left-side-wrap -->
 
-    <div class="right-side-wrap">
-      <div class="side">
-          <%== $rightside %>
-      </div> <!-- /side -->
-    </div> <!-- /right-side-wrap -->
+        <div class="right-side-wrap">
+            <div class="side">
+                <%== $rightside %>
+            </div> <!-- /side -->
+        </div> <!-- /right-side-wrap -->
 
-  </div> <!-- /inner -->
+    </div> <!-- /inner -->
     <div id="footer-wrap">
         <footer>
             <%== $footer %>
-      </footer>
+        </footer>
     </div> <!-- /footer-wrap -->
 </div> <!-- /page-wrap -->
 </body>

@@ -4,7 +4,7 @@ use lib "$FindBin::RealBin" . "/lib";
 use Mojolicious::Lite;
 
 plugin 'Config' => { file => "$FindBin::RealBin/marky.conf" };
-plugin 'Marky::Themes' => {base_dir => $FindBin::RealBin};
+plugin 'Marky::Looks' => {base_dir => $FindBin::RealBin};
 plugin 'Marky::DbTableSet';
 
 sub setup {
@@ -26,7 +26,7 @@ sub setup {
         app->defaults($key, app->config->{defaults}->{$key});
     }
 
-    app->defaults(breadcrumb => '<a href="/">Home</a> &gt; ');
+    app->defaults(breadcrumb => '<a href="/">Marky</a>');
 }
 setup();
 
