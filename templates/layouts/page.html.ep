@@ -3,6 +3,7 @@
 <head>
     <title><%= title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="<%= url_for('/styles/fa') %>/css/font-awesome.min.css" type="text/css" />
     <link rel="stylesheet" href="<%= url_for('/styles') %>/layout/layout_flex.css" type="text/css" />
     <link rel="stylesheet" type="text/css" title="default" href="<%= url_for('/styles') %>/themes/theme_<%= $theme %>.css"/>
     <link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />

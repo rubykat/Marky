@@ -227,29 +227,19 @@ EOT
     if (!defined $self->{tags_template})
     {
         $self->{tags_template} =<<'EOT';
-<a href="{$url}/{?tags_query [$tags_query]}{?qquery ?[$qquery]}" class="{?in_list tag!!tag button}">{$tag}{?num_tags  ([$num_tags])}</a>
+<a href="{$url}/{?tags_query [$tags_query]}{?qquery ?[$qquery]}" class="tag {?not_in_list button}">{?not_in_list <span class="fa fa-tag"></span>} {$tag}{?num_tags  ([$num_tags])}</a>
 EOT
     }
     if (!defined $self->{tag_query_template})
     {
         $self->{tag_query_template} =<<'EOT';
-<form action="{$url}/{?tags_query [$tags_query]}" class="tag">
-<input type="hidden" name="deltag" value="{$tag}"/>
-{?q <input type="hidden" name="q" value="[$q]"/>}
-{?p <input type="hidden" name="p" value="[$p]"/>}
-<input type="submit" value="X {$tag}"/>
-</form>
+<a title="Remove tag" href="{$url}/{?tags_query [$tags_query]}?deltag={$tag}{?q &q=[$q]}{?p &p=[$p]}" class="tag button"><span class="fa fa-tag"></span> {$tag} <span class="remove fa fa-remove"></span></a>
 EOT
     }
     if (!defined $self->{q_query_template})
     {
         $self->{q_query_template} =<<'EOT';
-<form action="{$url}{?tags_query /tags/[$tags_query]}" class="tag">
-<input type="hidden" name="q" value="{$qquery}"/>
-<input type="hidden" name="delterm" value="{$qterm}"/>
-{?p <input type="hidden" name="p" value="[$p]"/>}
-<input type="submit" value="X {$qterm}"/>
-</form>
+<a title="Remove term" href="{$url}/{?tags_query tags/[$tags_query]}?delterm={$qterm}{?q &q=[$q]}{?p &p=[$p]}" class="tag button"><span class="fa fa-question"></span> {$qterm} <span class="remove fa fa-close"></span></a>
 EOT
     }
     if (!defined $self->{results_template})
@@ -268,8 +258,8 @@ EOT
         $self->{searchform} =<<'EOT';
 <div class="searchform">
 <form action="{$action}">
-<label>Any:</label> <input type="text" name="q" value="{$q}" size="38">
-<label>Tags:</label> <input type="text" name="tags" value="{$tags}" size="38">
+<label class="fa fa-question">Any:</label> <input type="text" name="q" value="{$q}" size="38">
+<label class="fa fa-tags">Tags:</label> <input type="text" name="tags" value="{$tags}" size="38">
 {?selectP <label>Pg:</label> [$selectP]}
 <input type="submit" value="Search">
 </form>
@@ -1200,6 +1190,7 @@ sub _format_tag_collection {
         push @out, $tobj->fill_in(data_hash=>{tag=>$tag,
             num_tags=>(defined $args{all_tags} ? $args{all_tags}->{$tag} : undef),
             in_list=>$args{in_list},
+            not_in_list=>!$args{in_list},
             tags_query=>$tq,
             qquery=>$qquery,
             url=>$tags_action},
