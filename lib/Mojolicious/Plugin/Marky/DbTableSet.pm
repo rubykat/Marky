@@ -45,41 +45,49 @@ sub register {
 
     $self->_init($app,$conf);
 
-    $app->helper( 'marky.do_query' => sub {
+    $app->helper( 'marky_do_query' => sub {
         my $c        = shift;
         my %args = @_;
 
         return $self->_do_query($c);
     } );
 
-    $app->helper( 'marky.display_tables' => sub {
+    $app->helper( 'marky_table_list' => sub {
         my $c        = shift;
         my %args = @_;
 
-        return $self->_display_tables($c);
+        return $self->_make_table_list($c);
     } );
 
-    $app->helper( 'marky.make_tc_list' => sub {
+    $app->helper( 'marky_table_array' => sub {
         my $c        = shift;
-        my $db        = shift;
+        my %args = @_;
 
-        return $self->_make_tc_list($c,$db);
+        my @tables = sort keys %{$self->{dbtables}};
+        return \@tables;
     } );
 
-    $app->helper( 'marky.taglist' => sub {
+    $app->helper( 'marky_db_related_list' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_make_db_related_list($c,%args);
+    } );
+
+    $app->helper( 'marky_taglist' => sub {
         my $c        = shift;
         my %args = @_;
 
         return $self->_taglist($c,%args);
     } );
 
-    $app->helper( 'marky.tagcloud' => sub {
+    $app->helper( 'marky_tagcloud' => sub {
         my $c        = shift;
         my %args = @_;
 
         return $self->_tagcloud($c,%args);
     } );
-    $app->helper( 'marky.set_options' => sub {
+    $app->helper( 'marky_set_options' => sub {
         my $c        = shift;
         my %args = @_;
 
@@ -176,25 +184,25 @@ sub _do_query {
         sort_by3=>$sort_by3,
         show_sql=>$app->config->{tables}->{$db}->{show_sql},
     );
-    my $tcnav = $self->_make_tc_list($c,$db);
-    my $snav = join("\n", $tcnav, $res->{sidebar});
+
+    $c->content('footer',$res->{searchform});
+    $c->stash('query_taglist', $res->{query_tags});
+
     $c->stash('results' => $res->{results});
-    $c->render(template => 'results',
-        footer=>$res->{searchform},
-        sidenav=>$snav);
+    $c->render(template => 'results');
 } # _do_query
 
-=head2 _make_tc_list
+=head2 _make_db_related_list
 
 Make a taglist/tagcloud list for this db
 
 =cut
 
-sub _make_tc_list {
+sub _make_db_related_list {
     my $self  = shift;
     my $c  = shift;
-    my $db = shift;
 
+    my $db = $c->param('db');
     my $db_url = $c->url_for("/db/$db");
     my @out = ();
     push @out, "<div class='dblist'><ul>";
@@ -206,7 +214,7 @@ sub _make_tc_list {
     push @out, "</ul></div>";
     my $out = join("\n", @out);
     return $out;
-} # _make_tc_list
+} # _make_db_related_list
 
 =head2 _make_table_list
 
@@ -230,23 +238,6 @@ sub _make_table_list {
     return $out;
 } # _make_table_list
 
-=head2 _display_tables
-
-Make a list of all the dbtables.
-
-=cut
-
-sub _display_tables {
-    my $self  = shift;
-    my $c  = shift;
-
-    my $out = $self->_make_table_list($c);
-
-    $c->stash('stuff' => $out);
-    $c->render(template => 'tables',
-        sidenav=>$out);
-} # _display_tables
-
 =head2 _taglist
 
 Make a taglist for a db
@@ -256,7 +247,6 @@ Make a taglist for a db
 sub _taglist {
     my $self  = shift;
     my $c  = shift;
-    my %args = @_;
 
     my $db = $c->param('db');
     my $opt_url = $c->url_for("/db/$db/opt");
@@ -266,10 +256,7 @@ sub _taglist {
         db=>$db,
         n=>0,
     );
-    my $tcnav = $self->_make_tc_list($c,$db);
-    $c->stash('results' => $res->{results});
-    $c->render(template => 'results',
-        sidenav=>$tcnav);
+    return $res->{results};
 } # _taglist
 
 =head2 _tagcloud
@@ -281,7 +268,6 @@ Make a tagcloud for a db
 sub _tagcloud {
     my $self  = shift;
     my $c  = shift;
-    my %args = @_;
 
     my $db = $c->param('db');
     my $opt_url = $c->url_for("/db/$db/opt");
@@ -291,10 +277,7 @@ sub _tagcloud {
         db=>$db,
         n=>0,
     );
-    my $tcnav = $self->_make_tc_list($c,$db);
-    $c->stash('results' => $res->{results});
-    $c->render(template => 'results',
-        sidenav=>$tcnav);
+    return $res->{results};
 } # _tagcloud
 
 =head2 _set_options
@@ -314,7 +297,7 @@ sub _set_options {
     # For example the themes are called by themselves on a different form
     my @db = (sort keys %{$self->{dbtables}});
 
-    my @fields = (qw(n theme));
+    my @fields = (qw(n));
     foreach my $db (@db)
     {
         push @fields, "${db}_sort_by";

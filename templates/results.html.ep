@@ -1,2 +1,10 @@
 % layout 'page';
+% content_for 'verso' => begin
+<nav><%== marky_db_related_list %></nav>
+<nav><%== $query_taglist %></nav>
+% end
+% content_for 'recto' => begin
+<%== foil_theme_selector %>
+% end
+<h1>Search <%= param('db') %></h1>
 <%== $results %>

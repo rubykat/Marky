@@ -3,38 +3,32 @@ use Mojo::Base 'Mojolicious::Controller';
 
 sub tables {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->display_tables();
+    $c->render(template=>'tables');
 }
 
 sub options {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->set_options();
+    $c->marky_set_options();
 }
 
 sub taglist {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->taglist();
+    $c->render(template=>'taglist');
 }
 
 sub tagcloud {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->tagcloud();
+    $c->render(template=>'tagcloud');
 }
 
 sub query {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->do_query();
+    $c->marky_do_query();
 }
 
 sub tags {
     my $c  = shift;
-    $c->marky->set_looks();
-    $c->marky->do_query();
+    $c->marky_do_query();
 }
 
 1;

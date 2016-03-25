@@ -34,40 +34,6 @@ use POSIX qw(ceil);
 use HTML::TagCloud;
 use Mojo::URL;
 
-=head1 REGISTER
-
-=cut
-
-sub register {
-    my ( $self, $app, $conf ) = @_;
-
-    $self->_set_defaults($conf);
-
-    $app->helper( 'query' => sub {
-        my $c        = shift;
-        my %args = @_;
-
-        $self->_connect();
-        return $self->_process_request(%args);
-    } );
-
-    $app->helper( 'taglist' => sub {
-        my $c        = shift;
-        my %args = @_;
-
-        $self->_connect();
-        return $self->_process_taglist(%args);
-    } );
-
-    $app->helper( 'tagcloud' => sub {
-        my $c        = shift;
-        my %args = @_;
-
-        $self->_connect();
-        return $self->_process_tagcloud(%args);
-    } );
-}
-
 =head1 METHODS
 
 =head2 new
@@ -89,22 +55,6 @@ sub new {
     return ($self);
 } # new
 
-=head2 test_query
-
-Query the database, return an array of results.
-
-$results = $dbtable->test_query($sql);
-
-=cut
-
-sub test_query {
-    my $self = shift;
-    my $sql = shift;
-
-    $self->_connect();
-    return $self->_do_select($sql);
-} # test_query
-
 =head2 query_raw
 
 Query the database, return an array of results.
@@ -125,7 +75,7 @@ sub query_raw {
 
 =head2 query
 
-Query the database, return results and sidebar.
+Query the database, return results and query-tags.
 
 $results = $dbtable->query(
     location=>$base_url,
@@ -245,7 +195,6 @@ EOT
     if (!defined $self->{results_template})
     {
         $self->{results_template} =<<'EOT';
-<h1>Search {$db}</h1>
 {?searchform [$searchform]}
 {?total <p>[$total] records found. Page [$p] of [$num_pages].</p>}
 {?query <div class="query">[$query]</div>}
@@ -388,7 +337,7 @@ sub _process_request {
         rows=>$data->{rows},
         total=>$data->{total},
     );
-    my $sidebar = $self->_format_taglist(
+    my $query_tags = $self->_format_taglist(
         %args,
         all_tags=>\%all_tags,
         tags_query=>$args{tags},
@@ -418,7 +367,7 @@ sub _process_request {
     );
 
     return { results=>$html,
-        sidebar=>$sidebar,
+        query_tags=>$query_tags,
         searchform=>$searchform,
         total=>$data->{total},
         num_pages=>$data->{num_pages},
@@ -455,20 +404,16 @@ sub _process_taglist {
         total=>$data->{total},
     );
     my $count = keys %all_tags;
-    my $sidebar = $self->_format_taglist(
+    my $query_tags = $self->_format_taglist(
         %args,
         all_tags=>\%all_tags,
         total_tags=>$count,
         tags_query=>$args{tags},
         tags_action=>"$location/tags",
     );
-    my $results =<<"EOT";
-<h1>Tag List</h1>
-$sidebar
-EOT
 
-    return { results=>$results,
-        sidebar=>$sidebar,
+    return { results=>$query_tags,
+        query_tags=>$query_tags,
         total=>$data->{total},
         total_tags=>$count,
         num_pages=>$data->{num_pages},
@@ -505,7 +450,7 @@ sub _process_tagcloud {
         total=>$data->{total},
     );
     my $count = keys %all_tags;
-    my $sidebar = $self->_format_taglist(
+    my $query_tags = $self->_format_taglist(
         %args,
         all_tags=>\%all_tags,
         tags_query=>$args{tags},
@@ -517,13 +462,9 @@ sub _process_tagcloud {
         tags_query=>$args{tags},
         tags_action=>"$location/tags",
     );
-    my $results =<<"EOT";
-<h1>Tag Cloud</h1>
-$tagcloud
-EOT
 
-    return { results=>$results,
-        sidebar=>$sidebar,
+    return { results=>$tagcloud,
+        query_tags=>$query_tags,
         total=>$data->{total},
         total_tags=>$count,
         num_pages=>$data->{num_pages},

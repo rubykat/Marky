@@ -1,0 +1,6 @@
+<!-- Grab jQuery from a CDN, fall back to local if necessary -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+<script type="text/javascript">/* <![CDATA[ */
+        !window.jQuery && document.write('<script type="text/javascript" src="<%= url_for("/styles/") %>/j/jquery.js"><\/script>')
+        /* ]]> */</script>
+

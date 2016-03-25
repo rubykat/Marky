@@ -1,9 +1,9 @@
 % layout 'page';
 % content_for 'verso' => begin
-<nav><%== marky_table_list %></nav>
+<nav><%== marky_db_related_list %></nav>
 % end
 % content_for 'recto' => begin
 <%== foil_theme_selector %>
 % end
-<h1>Select What Table To Search</h1>
-<%== marky_table_list %>
+<h1>Tag Cloud: <%= param('db') %></h1>
+<%== marky_tagcloud %>

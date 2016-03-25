@@ -1,12 +1,12 @@
-package Mojolicious::Plugin::Marky::Looks;
+package Mojolicious::Plugin::Foil;
 
 =head1 NAME
 
-Mojolicious::Plugin::Marky::Looks - looks for app
+Mojolicious::Plugin::Foil - looks for app
 
 =head1 VERSION
 
-This describes version 0.1 of Marky
+This describes version 0.1
 
 =cut
 
@@ -14,11 +14,10 @@ our $VERSION = '0.1';
 
 =head1 SYNOPSIS
 
-    use Mojolicious::Plugin::Marky::Looks;
+    use Mojolicious::Plugin::Foil;
 
 =head1 DESCRIPTION
 
-Bookmarking and Tutorial Library application.
 Pretty themes; putting them in the application
 instead of in javascript; it's faster this way.
 Also other looks like breadcrumbs and other header stuff.
@@ -37,22 +36,64 @@ use Path::Tiny;
 sub register {
     my ( $self, $app, $conf ) = @_;
 
-    my $base_dir = $conf->{base_dir};
-    $self->_get_themes($base_dir);
+    $self->_get_themes($app);
 
-    $app->helper( 'marky.theme_selector' => sub {
+    $app->helper( 'foil_navbar' => sub {
         my $c        = shift;
         my %args     = @_;
 
-        return $self->_make_theme_selector(%args);
+        return $self->_make_navbar($c,%args);
     } );
-
-    $app->helper( 'marky.set_looks' => sub {
+    $app->helper( 'foil_breadcrumb' => sub {
         my $c        = shift;
         my %args     = @_;
 
-        return $self->_set_looks($c,%args);
+        return $self->_make_breadcrumb($c,%args);
     } );
+    $app->helper( 'foil_logo' => sub {
+        my $c        = shift;
+        my %args     = @_;
+
+        return $self->_make_logo($c,%args);
+    } );
+    $app->helper( 'foil_theme_id' => sub {
+        my $c        = shift;
+        my %args     = @_;
+
+        return $self->_get_theme_id($c,%args);
+    } );
+    $app->helper( 'foil_theme_selector' => sub {
+        my $c        = shift;
+        my %args     = @_;
+
+        return $self->_make_theme_selector($c,%args);
+    } );
+    # add routes for setting the theme
+    $app->routes->get('/foil/set' => sub {
+            my $c        = shift;
+
+            $self->_set_theme($c);
+        })->name('foilset');
+    $self->{main_route} = 'foilset';
+
+    if (exists $conf->{add_prefixes}
+            and defined $conf->{add_prefixes})
+    {
+        my @prefixes = @{$conf->{add_prefixes}};
+        foreach my $rp (@prefixes)
+        {
+            $rp =~ s!/$!!; # remove trailing slash
+            my $rname = $rp;
+            $rname =~ s/[^a-zA-Z0-9]//g;
+            $app->routes->get("${rp}/foil/set" => sub {
+                    my $c        = shift;
+
+                    $self->_set_theme($c);
+                })->name("${rname}foilset");
+
+            $self->{extra_routes}->{$rname} = $rp;
+        }
+    }
 }
 
 =head1 Helper Functions
@@ -69,8 +110,9 @@ Get the list of themes from the themes.json file.
 
 sub _get_themes {
     my $self = shift;
-    my $base_dir = path(shift);
+    my $app = shift;
 
+    my $base_dir = path($app->home);
     my $theme_file = $base_dir->child("public/styles/themes/themes.json");
     if (!-f $theme_file)
     {
@@ -103,10 +145,31 @@ For selecting themes.
 
 sub _make_theme_selector {
     my $self = shift;
+    my $c = shift;
     my %args = @_;
 
-    my $curr_theme = $args{current_theme};
-    my $opt_url = $args{opt_url};
+    my $curr_theme = $self->_get_theme_id($c,%args);
+
+    my $curr_url = $c->url_for('current');
+    my $opt_url = $c->url_for($self->{main_route});
+    # check if this matches one of the extra routes instead
+    # Note that we remember the prefix when we make the extra route
+    if (exists $self->{extra_routes}
+            and defined $self->{extra_routes})
+    {
+        my @route_names = keys %{$self->{extra_routes}};
+        foreach my $rname (@route_names)
+        {
+            my $prefix = $self->{extra_routes}->{$rname};
+            my $rurl = $c->url_for($prefix);
+
+            if ($curr_url =~ /^\Q$prefix\E\//)
+            {
+                $opt_url = $c->url_for("${prefix}/foil/set");
+                last;
+            }
+        }
+    }
 
     my @out = ();
     push @out, "<div class='themes'>";
@@ -186,48 +249,90 @@ sub _make_navbar {
     return $out;
 } # _make_navbar
 
-=head2 _set_looks
+=head2 _make_breadcrumb
 
-For selecting themes.
+Make breadcrumb showing the previous page.
 
 =cut
 
-sub _set_looks {
+sub _make_breadcrumb {
     my $self = shift;
     my $c = shift;
     my %args = @_;
 
     my $url = $c->req->headers->referrer;
     my $rhost = $c->req->headers->host;
-    my $logoid = 'logo';
+
     my $hostname = $rhost;
     if (exists $c->config->{vhosts}->{$rhost})
     {
         $hostname = $c->config->{vhosts}->{$rhost}->{name};
-        $logoid = $c->config->{vhosts}->{$rhost}->{logoid};
     }
+
     my $breadcrumb = "<b>$hostname</b> <a href='/'>Home</a>";
     if (defined $url)
     {
         $breadcrumb .= " &gt; <a href='$url'>$url</a>";
     }
-    $c->stash(breadcrumb => $breadcrumb);
-    $c->stash(logoid => $logoid);
-    $c->stash(navbar => $self->_make_navbar($c,%args));
+    return $breadcrumb;
+} # _make_breadcrumb
 
-    my $db = $c->param('db');
+=head2 _make_logo
+
+Make breadcrumb showing the previous page.
+
+=cut
+
+sub _make_logo {
+    my $self = shift;
+    my $c = shift;
+    my %args = @_;
+
+    my $rhost = $c->req->headers->host;
+    my $logoid = 'logo';
+    if (exists $c->config->{vhosts}->{$rhost})
+    {
+        $logoid = $c->config->{vhosts}->{$rhost}->{logoid};
+    }
+    my $logo =<<"EOT";
+<div id="$logoid" class="logo"><a href="/">Home</a></div>
+EOT
+    return $logo;
+} # _make_logo
+
+=head2 _get_theme_id
+
+Get the ID of the current theme.
+
+=cut
+
+sub _get_theme_id {
+    my $self = shift;
+    my $c = shift;
+    my %args = @_;
+
     my $theme = $c->session('theme');
     $theme = 'silver' if !$theme;
-    $c->stash(theme=>$theme);
-    my $opt_url = $c->url_for(
-        ($db ?  "/db/$db/opt" : "/opt")
-    );
-    my $theme_sel = $self->_make_theme_selector(
-        current_theme=>$theme,
-        opt_url=>$opt_url,
-    );
-    $c->stash(rightside=>$theme_sel);
-} # _set_looks
+    return $theme;
+} # _get_theme_id
 
-1; # End of Mojolicious::Plugin::Marky::Looks
+=head2 _set_theme
+
+For remembering themes.
+
+=cut
+
+sub _set_theme {
+    my $self = shift;
+    my $c = shift;
+
+    my $theme = $c->param('theme');
+    if ($theme)
+    {
+        $c->session->{theme} = $theme;
+    }
+    $c->redirect_to($c->req->headers->referrer);
+} # _set_theme
+
+1; # End of Mojolicious::Plugin::Foil
 __END__

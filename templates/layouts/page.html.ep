@@ -3,25 +3,13 @@
 <head>
     <title><%= title %></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="<%= url_for('/styles/fa') %>/css/font-awesome.min.css" type="text/css" />
-    <link rel="stylesheet" href="<%= url_for('/styles') %>/layout/layout_flex.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" title="default" href="<%= url_for('/styles') %>/themes/theme_<%= $theme %>.css"/>
-    <link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />
-
-    <!-- Grab jQuery from a CDN, fall back to local if necessary -->
-    <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
-    <script type="text/javascript">/* <![CDATA[ */
-        !window.jQuery && document.write('<script type="text/javascript" src="<%= url_for("/styles/") %>/j/jquery.js"><\/script>')
-        /* ]]> */</script>
+    %= include 'chunks/common_css'
+    %= include 'chunks/common_js'
 </head>
 <body>
 <div id="page-wrap">
     <header>
-        <div id="header_top">
-            <div id="<%= $logoid %>" class="logo"><a href="/">Home</a></div>
-            <%== $navbar %>
-        </div> <!-- /header_top -->
-        <div class="breadcrumb"><%== $breadcrumb %></div>
+    %= include 'chunks/header'
     </header>
   
     <div id="inner">
@@ -30,24 +18,22 @@
                 <%== content %>
             </main>
         </div> <!-- /main-wrap -->
-        <div class="left-side-wrap">
+        <div class="verso-wrap">
             <div class="side">
-                <nav>
-                    <%== $sidenav %>
-                </nav>
+                %= content 'verso'
             </div> <!-- /side -->
-        </div> <!-- /left-side-wrap -->
+        </div> <!-- /verso-wrap -->
 
-        <div class="right-side-wrap">
+        <div class="recto-wrap">
             <div class="side">
-                <%== $rightside %>
+                %= content 'recto'
             </div> <!-- /side -->
-        </div> <!-- /right-side-wrap -->
+        </div> <!-- /recto-wrap -->
 
     </div> <!-- /inner -->
     <div id="footer-wrap">
         <footer>
-            <%== $footer %>
+        %= content 'footer'
         </footer>
     </div> <!-- /footer-wrap -->
 </div> <!-- /page-wrap -->

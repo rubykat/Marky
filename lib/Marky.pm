@@ -6,8 +6,14 @@ sub startup {
     my $self = shift;
 
     $self->plugin('Config' => { file => "$FindBin::RealBin/../marky.conf" });
-    $self->plugin('Marky::Looks' => {base_dir => $FindBin::RealBin . "/.."});
     $self->plugin('Marky::DbTableSet');
+
+    my @db_routes = ();
+    foreach my $db (@{$self->marky_table_array})
+    {
+        push @db_routes, "/db/$db";
+    }
+    $self->plugin('Foil' => { add_prefixes => \@db_routes});
 
     # -------------------------------------------
     # Config hypnotoad
@@ -27,7 +33,6 @@ sub startup {
         $self->defaults($key, $self->config->{defaults}->{$key});
     }
 
-    $self->defaults(breadcrumb => '<a href="/">Marky</a>');
     # -------------------------------------------
 
     # Router

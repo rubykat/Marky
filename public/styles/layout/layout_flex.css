@@ -160,12 +160,12 @@ footer div {
   order: 20;
 }
 
-.left-side-wrap {
+.verso-wrap {
   width: 15%;
   order: 10;
 }
 
-.right-side-wrap {
+.recto-wrap {
   width: 15%;
   order: 30;
 }
@@ -183,11 +183,11 @@ footer div {
     width: 80%;
   }
 
-  .left-side-wrap {
+  .verso-wrap {
     width: 20%;
   }
 
-  .right-side-wrap {
+  .recto-wrap {
     width: 100%;
   }
 
@@ -209,8 +209,8 @@ footer div {
     margin-right: auto;
   }
 
-  .left-side-wrap,
-  .right-side-wrap {
+  .verso-wrap,
+  .recto-wrap {
     width: 13.5em;
     margin: 0;
   }
@@ -240,8 +240,8 @@ footer div {
   }
 
   #main-wrap,
-  .left-side-wrap,
-  .right-side-wrap {
+  .verso-wrap,
+  .recto-wrap {
     width: 100%;
   }
 
