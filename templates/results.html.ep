@@ -1,4 +1,8 @@
-% layout 'page';
+% layout 'foil';
+% content_for 'head_extra' => begin
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />
+% end
 % content_for 'verso' => begin
 <nav><%== marky_db_related_list %></nav>
 <nav><%== $query_taglist %></nav>

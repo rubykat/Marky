@@ -1,4 +1,4 @@
-% layout 'page';
+% layout 'foil';
 % content_for 'verso' => begin
 <nav><%== marky_table_list %></nav>
 % end

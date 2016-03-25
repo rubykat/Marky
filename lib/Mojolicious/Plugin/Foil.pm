@@ -38,6 +38,10 @@ sub register {
 
     $self->_get_themes($app);
 
+    # Append class
+    push @{$app->renderer->classes}, __PACKAGE__;
+    push @{$app->static->classes},   __PACKAGE__;
+
     $app->helper( 'foil_navbar' => sub {
         my $c        = shift;
         my %args     = @_;
@@ -335,4 +339,59 @@ sub _set_theme {
 } # _set_theme
 
 1; # End of Mojolicious::Plugin::Foil
-__END__
+
+__DATA__
+
+@@ foil/header.html.ep
+<div id="header_top">
+<%== foil_logo %>
+<%== foil_navbar %>
+</div> <!-- /header_top -->
+<div class="breadcrumb"><%== foil_breadcrumb %></div>
+
+@@ foil/common_css.html.ep
+<link rel="stylesheet" href="<%= url_for('/styles') %>/layout/layout_flex.css" type="text/css" />
+<link rel="stylesheet" type="text/css" title="default" href="<%= url_for('/styles') %>/themes/theme_<%= foil_theme_id %>.css"/>
+
+@@ layouts/foil.html.ep
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    %= include 'foil/common_css'
+    %= content 'head_extra'
+</head>
+<body>
+<div id="page-wrap">
+    <header>
+    %= include 'foil/header'
+    </header>
+  
+    <div id="inner">
+        <div id="main-wrap">
+            <main>
+                <%== content %>
+            </main>
+        </div> <!-- /main-wrap -->
+        <div class="verso-wrap">
+            <div class="side">
+                %= content 'verso'
+            </div> <!-- /side -->
+        </div> <!-- /verso-wrap -->
+
+        <div class="recto-wrap">
+            <div class="side">
+                %= content 'recto'
+            </div> <!-- /side -->
+        </div> <!-- /recto-wrap -->
+
+    </div> <!-- /inner -->
+    <div id="footer-wrap">
+        <footer>
+        %= content 'footer'
+        </footer>
+    </div> <!-- /footer-wrap -->
+</div> <!-- /page-wrap -->
+</body>
+</html>

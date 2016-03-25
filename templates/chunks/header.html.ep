@@ -1,5 +1,0 @@
-<div id="header_top">
-<%== foil_logo %>
-<%== foil_navbar %>
-</div> <!-- /header_top -->
-<div class="breadcrumb"><%== foil_breadcrumb %></div>
