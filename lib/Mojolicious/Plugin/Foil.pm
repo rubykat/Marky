@@ -28,6 +28,7 @@ use Mojo::Base 'Mojolicious::Plugin';
 use common::sense;
 use File::Serialize;
 use Path::Tiny;
+use File::ShareDir 'module_dir';
 
 =head1 REGISTER
 
@@ -36,11 +37,35 @@ use Path::Tiny;
 sub register {
     my ( $self, $app, $conf ) = @_;
 
-    $self->_get_themes($app);
-
     # Append class
     push @{$app->renderer->classes}, __PACKAGE__;
     push @{$app->static->classes},   __PACKAGE__;
+
+    # Append directories
+    # Find the Foil shared directory
+    # It could be relative to the app home,
+    # it could be relative to this current file,
+    # it could be in a FileShared location.
+    my $app_home = path($app->home);
+    my $foilshared = $app_home->child("foil");
+    my $foilshared;
+
+    if (!-d $foilshared)
+    {
+        my $mydir = path(__FILE__)->parent; # lib/Mojolicious/Plugin
+        my $top = $mydir->parent->parent->parent;
+        $foilshared = $top->child("foil");
+        if (!-d $foilshared)
+        {
+            my $module_dir = path(module_dir(__PACKAGE__));
+            $foilshared = $module_dir->child("foil");
+        }
+    }
+
+    push @{$app->static->paths}, $foilshared;
+    $self->{foilshared} = $foilshared;
+
+    $self->_get_themes($app);
 
     $app->helper( 'foil_navbar' => sub {
         my $c        = shift;
@@ -116,8 +141,7 @@ sub _get_themes {
     my $self = shift;
     my $app = shift;
 
-    my $base_dir = path($app->home);
-    my $theme_file = $base_dir->child("public/styles/themes/themes.json");
+    my $theme_file = $self->{foilshared}->child("styles/themes/themes.json");
     if (!-f $theme_file)
     {
         die "'$theme_file' not found";
