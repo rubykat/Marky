@@ -44,7 +44,7 @@
 }
 
 .results li .linktitle {
-    font-size: 14pt;
+    font-size: 1.2em;
     font-weight: bold;
 }
 
@@ -55,6 +55,14 @@
     max-height: 400px;
     overflow: auto;
 }
+
+.results li .details {
+    font-size: 0.8em;
+}
+.results li .details .status {
+    font-style: italic;
+}
+
 
 .results li .thumbnail {
     float: right;
@@ -67,7 +75,7 @@
     height: 150px;
 }
 
-.results li .category {
+.results li .grouping {
     font-style: italic;
 }
 
@@ -81,10 +89,10 @@
     display: inline-block;
 }
 
-.linktaglist {
+.results li .linktaglist {
     clear: both;
 }
-.linktaglist form {
+.results li .linktaglist form {
     display: inline-block;
 }
 

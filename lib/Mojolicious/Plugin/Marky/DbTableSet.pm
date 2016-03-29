@@ -112,15 +112,20 @@ sub _init {
     my $conf = shift;
 
     $self->{dbtables} = {};
-    my $tnav = "<div class='dblist'><ul>";
+    my %aliases = ();
     foreach my $t (sort keys %{$app->config->{tables}})
     {
         $self->{dbtables}->{$t} = Marky::DbTable->new(%{$app->config->{tables}->{$t}});
-        my $url = $app->url_for("/db/$t");
-        $tnav .= "<li><a href='$url'>$t</a></li>\n";
+        if (exists $app->config->{tables}->{$t}->{public_dir})
+        {
+            my $pdir = $app->config->{tables}->{$t}->{public_dir};
+            if (-d $pdir)
+            {
+                $aliases{"/db/${t}/view"} = $pdir;
+            }
+        }
     }
-    $tnav .= "</ul></div>";
-    $app->defaults(sidenav => $tnav);
+    $app->plugin('alias', \%aliases);
     return $self;
 } # _init
 

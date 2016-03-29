@@ -4,7 +4,10 @@ use strict;
 use warnings;
 
 use FindBin;
-BEGIN { unshift @INC, "$FindBin::RealBin/../lib" }
+BEGIN {
+    unshift @INC, "/home/kat/files/git/public/perl/Mojolicious-Plugin-Foil/lib";
+    unshift @INC, "$FindBin::RealBin/../lib";
+}
 
 # Start command line interface for application
 require Mojolicious::Commands;
