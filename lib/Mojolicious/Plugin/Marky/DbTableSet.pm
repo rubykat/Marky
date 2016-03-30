@@ -297,9 +297,6 @@ sub _set_options {
     my %args = @_;
 
     # Set options for things like n
-    # Note that we don't delete old values
-    # because this can be called with different sets of values
-    # For example the themes are called by themselves on a different form
     my @db = (sort keys %{$self->{dbtables}});
 
     my @fields = (qw(n));
@@ -309,12 +306,29 @@ sub _set_options {
         push @fields, "${db}_sort_by2";
         push @fields, "${db}_sort_by3";
     }
+    my %fields_set = ();
     foreach my $field (@fields)
     {
         my $val = $c->param($field);
         if ($val)
         {
             $c->session->{$field} = $val;
+            $fields_set{$field} = 1;
+        }
+        else
+        {
+            if ($field =~ /(\w+)_sort_by./)
+            {
+                # We want to delete later sort-by values
+                # if they are blank and the first one was set,
+                # because we want to be able to sort by just
+                # one or two fields if we want.
+                my $db = $1;
+                if ($fields_set{"${db}_sort_by"})
+                {
+                    delete $c->session->{$field};
+                }
+            }
         }
     }
     $c->redirect_to($c->req->headers->referrer);
