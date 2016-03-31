@@ -6,7 +6,7 @@ Marky::DbTable - querying one database table
 
 =head1 VERSION
 
-This describes version 0.1 of Marky
+This describes version 0.1 of Marky::DbTable
 
 =cut
 

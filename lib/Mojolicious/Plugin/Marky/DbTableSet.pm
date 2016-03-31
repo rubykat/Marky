@@ -25,6 +25,7 @@ Querying one database table, returning result.
 
 use Mojo::Base 'Mojolicious::Plugin';
 use Marky::DbTable;
+use Marky::Bookmarker;
 use common::sense;
 use DBI;
 use Path::Tiny;
@@ -93,6 +94,24 @@ sub register {
 
         return $self->_set_options($c,%args);
     } );
+    $app->helper( 'marky_add_bookmark_form' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_add_bookmark_form($c,%args);
+    } );
+    $app->helper( 'marky_add_bookmark_bookmarklet' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_add_bookmark_bookmarklet($c,%args);
+    } );
+    $app->helper( 'marky_save_new_bookmark' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_save_new_bookmark($c,%args);
+    } );
 }
 
 =head1 Helper Functions
@@ -112,10 +131,16 @@ sub _init {
     my $conf = shift;
 
     $self->{dbtables} = {};
+    $self->{edit_tables} = {};
     my %aliases = ();
     foreach my $t (sort keys %{$app->config->{tables}})
     {
         $self->{dbtables}->{$t} = Marky::DbTable->new(%{$app->config->{tables}->{$t}});
+        if (exists $app->config->{tables}->{$t}->{editing}
+                and ref $app->config->{tables}->{$t}->{editing} eq 'HASH')
+        {
+            $self->{edit_tables}->{$t} = Marky::Bookmarker->new(%{$app->config->{tables}->{$t}->{editing}});
+        }
         if (exists $app->config->{tables}->{$t}->{public_dir})
         {
             my $pdir = $app->config->{tables}->{$t}->{public_dir};
@@ -333,6 +358,100 @@ sub _set_options {
     }
     $c->redirect_to($c->req->headers->referrer);
 } # _set_options
+
+=head2 _add_bookmark_form
+
+Create a bookmark form; if the values have been passed in via GET,
+then use them to pre-fill the form.
+
+=cut
+
+sub _add_bookmark_form {
+    my $self  = shift;
+    my $c  = shift;
+    my %args = @_;
+
+    my $db = $c->param('db');
+    if (!exists $self->{edit_tables}->{$db})
+    {
+        $c->render(template => 'apperror',
+            errormsg=>"<p>No such editable db: $db</p>");
+        return;
+    }
+
+    my %data = ();
+    my @fields = $self->{edit_tables}->{$db}->fields();
+    foreach my $fn (@fields)
+    {
+        my $val = $c->param($fn);
+        if (defined $val)
+        {
+            $data{$fn} = $val;
+        }
+    }
+    my $add_url = $c->url_for("/db/$db/add");
+    return $self->{edit_tables}->{$db}->bookmark_form(
+        action=>$add_url,
+        %data,
+    );
+} # _add_bookmark_form
+
+=head2 _add_bookmark_bookmarklet
+
+Create a Javascript bookmarklet
+
+=cut
+
+sub _add_bookmark_bookmarklet {
+    my $self  = shift;
+    my $c  = shift;
+    my %args = @_;
+
+    my $db = $c->param('db');
+    if (!exists $self->{edit_tables}->{$db})
+    {
+        $c->render(template => 'apperror',
+            errormsg=>"<p>No such editable db: $db</p>");
+        return;
+    }
+
+    my $add_url = $c->url_for("/db/$db/add")->to_abs;
+    return $self->{edit_tables}->{$db}->bookmarklet(
+        %args,
+        action=>$add_url,
+    );
+} # _add_bookmark_bookmarklet
+
+=head2 _save_new_bookmark
+
+Save the bookmark info which we got in the (post) parameters
+
+=cut
+
+sub _save_new_bookmark {
+    my $self  = shift;
+    my $c  = shift;
+    my %args = @_;
+
+    my $db = $c->param('db');
+    if (!exists $self->{edit_tables}->{$db})
+    {
+        $c->render(template => 'apperror',
+            errormsg=>"<p>No such editable db: $db</p>");
+        return;
+    }
+    my %data = ();
+    my @fields = $self->{edit_tables}->{$db}->fields();
+    foreach my $fn (@fields)
+    {
+        my $val = $c->param($fn);
+        if (defined $val)
+        {
+            $data{$fn} = $val;
+        }
+    }
+    $self->{edit_tables}->{$db}->save_new_bookmark(data=>\%data);
+} # _save_new_bookmark
 
 1; # End of Mojolicious::Plugin::Marky::DbTableSet
 __END__

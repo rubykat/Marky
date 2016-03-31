@@ -31,4 +31,15 @@ sub tags {
     $c->marky_do_query();
 }
 
+sub add_bookmark {
+    my $c  = shift;
+    $c->render(template=>'add_bookmark');
+}
+sub save_bookmark {
+    my $c  = shift;
+    $c->marky_save_new_bookmark();
+    $c->render(template=>'save_bookmark');
+}
+
+
 1;

@@ -1,0 +1,14 @@
+% layout 'foil';
+% content_for 'head_extra' => begin
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/bookmark.css" type="text/css" />
+% end
+% content_for 'verso' => begin
+<nav><%== marky_db_related_list %></nav>
+% end
+% content_for 'recto' => begin
+<%== marky_add_bookmark_bookmarklet %>
+<%== foil_theme_selector %>
+% end
+<h1>Bookmark for <%= param('db') %></h1>
+<p>Bookmark saved.</p>

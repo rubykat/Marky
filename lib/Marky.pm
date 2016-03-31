@@ -48,6 +48,8 @@ sub startup {
     $r->get('/db/:db')->to('db#query');
     $r->get('/db/:db/tags/:tags')->to('db#tags');
 
+    $r->get('/db/:db/add')->to('db#add_bookmark');
+    $r->post('/db/:db/add')->to('db#save_bookmark');
 }
 
 1;
