@@ -9,6 +9,7 @@ sub tables {
 sub options {
     my $c  = shift;
     $c->marky_set_options();
+    $c->render(template => 'settings');
 }
 
 sub taglist {

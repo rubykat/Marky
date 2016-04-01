@@ -94,6 +94,12 @@ sub register {
 
         return $self->_set_options($c,%args);
     } );
+    $app->helper( 'marky_settings' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_settings($c,%args);
+    } );
     $app->helper( 'marky_add_bookmark_form' => sub {
         my $c        = shift;
         my %args = @_;
@@ -170,7 +176,7 @@ sub _do_query {
     {
         $c->render(template => 'apperror',
             errormsg=>"<p>No such db: $db</p>");
-        return;
+        return undef;
     }
 
     my $tags = $c->param('tags');
@@ -214,6 +220,12 @@ sub _do_query {
         sort_by3=>$sort_by3,
         show_sql=>$app->config->{tables}->{$db}->{show_sql},
     );
+    if (!defined $res)
+    {
+        $c->render(template => 'apperror',
+            errormsg=>$self->{dbtables}->{$db}->what_error());
+        return undef;
+    }
 
     $c->content('footer',$res->{searchform});
     $c->stash('query_taglist', $res->{query_tags});
@@ -286,6 +298,12 @@ sub _taglist {
         db=>$db,
         n=>0,
     );
+    if (!defined $res)
+    {
+        $c->render(template => 'apperror',
+            errormsg=>$self->{dbtables}->{$db}->what_error());
+        return undef;
+    }
     return $res->{results};
 } # _taglist
 
@@ -307,6 +325,12 @@ sub _tagcloud {
         db=>$db,
         n=>0,
     );
+    if (!defined $res)
+    {
+        $c->render(template => 'apperror',
+            errormsg=>$self->{dbtables}->{$db}->what_error());
+        return undef;
+    }
     return $res->{results};
 } # _tagcloud
 
@@ -356,8 +380,39 @@ sub _set_options {
             }
         }
     }
-    $c->redirect_to($c->req->headers->referrer);
+    my $referrer = $c->req->headers->referrer;
 } # _set_options
+
+=head2 _settings
+
+Show the current settings
+
+=cut
+
+sub _settings {
+    my $self  = shift;
+    my $c  = shift;
+    my %args = @_;
+
+    my $db = $c->param('db');
+
+    my @fields = (qw(n));
+    push @fields, "${db}_sort_by";
+    push @fields, "${db}_sort_by2";
+    push @fields, "${db}_sort_by3";
+    
+    my @out = ();
+    foreach my $field (@fields)
+    {
+        my $val = $c->session->{$field};
+        push @out, "<p><b>$field:</b> $val</p>";
+    }
+    my $referrer = $c->req->headers->referrer;
+    print STDERR "_settings referrer=$referrer\n";
+    push @out, "<p>Back: <a href='$referrer'>$referrer</a></p>";
+
+    return join("\n", @out);
+} # _settings
 
 =head2 _add_bookmark_form
 

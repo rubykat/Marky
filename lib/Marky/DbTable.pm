@@ -67,7 +67,10 @@ sub query_raw {
     my $self = shift;
     my %args = @_;
 
-    $self->_connect();
+    if (!$self->_connect())
+    {
+        return undef;
+    }
 
     my $data = $self->_search(%args);
     return $data;
@@ -87,7 +90,10 @@ sub query {
     my $self = shift;
     my %args = @_;
 
-    $self->_connect();
+    if (!$self->_connect())
+    {
+        return undef;
+    }
 
     return $self->_process_request(%args);
 } # query
@@ -102,7 +108,10 @@ sub taglist {
     my $self = shift;
     my %args = @_;
 
-    $self->_connect();
+    if (!$self->_connect())
+    {
+        return undef;
+    }
 
     return $self->_process_taglist(%args);
 } # taglist
@@ -117,10 +126,44 @@ sub tagcloud {
     my $self = shift;
     my %args = @_;
 
-    $self->_connect();
+    if (!$self->_connect())
+    {
+        return undef;
+    }
 
     return $self->_process_tagcloud(%args);
 } # tagcloud
+
+=head2 total_records
+
+Query the database, return the total number of records.
+
+=cut
+
+sub total_records {
+    my $self = shift;
+    my %args = @_;
+
+    if (!$self->_connect())
+    {
+        return undef;
+    }
+
+    return $self->_total_records(%args);
+} # total_records
+
+=head2 what_error
+
+There was an error, what was it?
+
+=cut
+
+sub what_error {
+    my $self = shift;
+    my %args = @_;
+
+    return $self->{error};
+} # what_error
 
 =head1 Helper Functions
 
@@ -254,16 +297,18 @@ sub _connect {
         my $dbh = DBI->connect($dsn, $user, $pw);
         if (!$dbh)
         {
-            die "Can't connect to $database $DBI::errstr";
+            $self->{error} = "Can't connect to $database $DBI::errstr";
+            return 0;
         }
         $self->{dbh} = $dbh;
     }
     else
     {
-	die "No Database given." . Dump($self);
+	$self->{error} = "No Database given." . Dump($self);
+        return 0;
     }
 
-    return 0;
+    return 1;
 } # _connect
 
 =head2 _do_select
@@ -283,12 +328,14 @@ sub _do_select {
     my $sth = $dbh->prepare($q);
     if (!$sth)
     {
-        die "FAILED to prepare '$q' $DBI::errstr";
+        $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
+        return undef;
     }
     my $ret = $sth->execute();
     if (!$ret)
     {
-        die "FAILED to execute '$q' $DBI::errstr";
+        $self->{error} = "FAILED to execute '$q' $DBI::errstr";
+        return undef;
     }
     my @results = ();
     my $row;
@@ -321,6 +368,10 @@ sub _process_request {
     my $data = $self->_search(
         %args
     );
+    if (!defined $data)
+    {
+        return undef;
+    }
 
     my $searchform = $self->_format_searchform(
         %args,
@@ -489,12 +540,14 @@ sub _total_records {
     my $sth = $dbh->prepare($q);
     if (!$sth)
     {
-        die "FAILED to prepare '$q' $DBI::errstr";
+        $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
+        return undef;
     }
     my $ret = $sth->execute();
     if (!$ret)
     {
-        die "FAILED to execute '$q' $DBI::errstr";
+        $self->{error} = "FAILED to execute '$q' $DBI::errstr";
+        return undef;
     }
     my $total = 0;
     my @row;
@@ -785,12 +838,14 @@ sub _search {
     my $sth = $dbh->prepare($q);
     if (!$sth)
     {
-        die "FAILED to prepare '$q' $DBI::errstr";
+        $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
+        return undef;
     }
     my $ret = $sth->execute();
     if (!$ret)
     {
-        die "FAILED to execute '$q' $DBI::errstr";
+        $self->{error} = "FAILED to execute '$q' $DBI::errstr";
+        return undef;
     }
     my @ret_rows=();
     my $total = 0;
@@ -812,12 +867,14 @@ sub _search {
         $sth = $dbh->prepare($q);
         if (!$sth)
         {
-            die "FAILED to prepare '$q' $DBI::errstr";
+            $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
+            return undef;
         }
         $ret = $sth->execute();
         if (!$ret)
         {
-            die "FAILED to execute '$q' $DBI::errstr";
+            $self->{error} = "FAILED to execute '$q' $DBI::errstr";
+            return undef;
         }
 
         while (my $hashref = $sth->fetchrow_hashref)
