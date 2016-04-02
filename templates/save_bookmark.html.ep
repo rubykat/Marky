@@ -11,4 +11,4 @@
 <%== foil_theme_selector %>
 % end
 <h1>Bookmark for <%= param('db') %></h1>
-<p>Bookmark saved.</p>
+<%== content 'results' %>

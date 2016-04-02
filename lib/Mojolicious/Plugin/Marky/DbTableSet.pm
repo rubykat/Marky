@@ -495,6 +495,8 @@ sub _save_new_bookmark {
             errormsg=>"<p>No such editable db: $db</p>");
         return;
     }
+    my @status = ();
+    push @status, "<div class='status'>";
     my %data = ();
     my @fields = $self->{edit_tables}->{$db}->fields();
     foreach my $fn (@fields)
@@ -503,9 +505,19 @@ sub _save_new_bookmark {
         if (defined $val)
         {
             $data{$fn} = $val;
+            push @status, "<p><span class='field'>$fn</span>: $val</p>";
         }
     }
-    $self->{edit_tables}->{$db}->save_new_bookmark(data=>\%data);
+    push @status, "</div>";
+    $c->content('results', join("\n", @status));
+    if (!$self->{edit_tables}->{$db}->save_new_bookmark(data=>\%data))
+    {
+        $c->content_for('results',"<p class='error'>Bookmark-save failed.</p>");
+    }
+    else
+    {
+        $c->content_for('results',"<p>Bookmark saved.</p>");
+    }
 } # _save_new_bookmark
 
 1; # End of Mojolicious::Plugin::Marky::DbTableSet

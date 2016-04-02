@@ -30,6 +30,7 @@ use File::Serialize;
 use Path::Tiny;
 use Text::NeatTemplate;
 use POSIX qw(strftime);
+use IPC::System::Simple qw(run EXIT_ANY);
 
 =head1 METHODS
 
@@ -79,7 +80,7 @@ sub save_new_bookmark {
     my $self = shift;
     my %args = @_;
 
-    $self->_save_new_bookmark(%args);
+    return $self->_save_new_bookmark(%args);
 } # save_new_bookmark
 
 =head2 bookmark_form
@@ -283,6 +284,16 @@ sub _save_new_bookmark {
     my $bm_dir = path($self->{bookmark_dir});
     my $fullname = $bm_dir->child($filename)->stringify;
     serialize_file $fullname => $data;
+
+    if (-x $self->{update_script})
+    {
+        my $exit_val = run(EXIT_ANY, $self->{update_script}, $fullname);
+        if ($exit_val != 0)
+        {
+            return 0;
+        }
+    }
+    return 1;
 } # _save_new_bookmark
 
 1; # End of Marky::Bookmarker
