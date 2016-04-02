@@ -965,6 +965,15 @@ sub _format_searchform {
             {
                 push @os, "<option value='$s'>$s</option>";
             }
+            my $s_desc = "${s} DESC";
+            if ($s_desc eq $args{$sf})
+            {
+                push @os, "<option value='$s_desc' selected>$s_desc</option>";
+            }
+            else
+            {
+                push @os, "<option value='$s_desc'>$s_desc</option>";
+            }
         }
         push @os, '</select>';
     }
