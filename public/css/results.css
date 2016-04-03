@@ -2,12 +2,6 @@
  * Formatting the results of the searches
  */
 
-.dblist {
-    margin-bottom: 0.5em;
-}
-.side nav .dblist ul {
-    list-style: circle inside;
-}
 .query {
     margin-bottom: 0.5em;
 }

@@ -1,8 +1,13 @@
 % layout 'foil';
+% content_for 'head_extra' => begin
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
+% end
 % content_for 'verso' => begin
 <nav><%== marky_db_related_list %></nav>
 % end
 % content_for 'recto' => begin
+<p class="total"><%= marky_total_records %> records in <%= param('db') %></p>
 <%== foil_theme_selector %>
 % end
 <h1>Tag Cloud: <%= param('db') %></h1>

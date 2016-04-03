@@ -67,6 +67,12 @@ sub register {
         my @tables = sort keys %{$self->{dbtables}};
         return \@tables;
     } );
+    $app->helper( 'marky_total_records' => sub {
+        my $c        = shift;
+        my %args = @_;
+
+        return $self->_total_records($c,%args);
+    } );
 
     $app->helper( 'marky_db_related_list' => sub {
         my $c        = shift;
@@ -88,6 +94,7 @@ sub register {
 
         return $self->_tagcloud($c,%args);
     } );
+
     $app->helper( 'marky_set_options' => sub {
         my $c        = shift;
         my %args = @_;
@@ -233,6 +240,28 @@ sub _do_query {
     $c->stash('results' => $res->{results});
     $c->render(template => 'results');
 } # _do_query
+
+=head2 _total_records
+
+Return the total number of records in this db
+
+=cut
+
+sub _total_records {
+    my $self  = shift;
+    my $c  = shift;
+
+    my $db = $c->param('db');
+
+    my $total = $self->{dbtables}->{$db}->total_records();
+    if (!defined $total)
+    {
+        $c->render(template => 'apperror',
+            errormsg=>$self->{dbtables}->{$db}->what_error());
+        return undef;
+    }
+    return $total;
+} # _total_records
 
 =head2 _make_db_related_list
 

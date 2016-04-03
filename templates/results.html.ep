@@ -1,6 +1,7 @@
 % layout 'foil';
 % content_for 'head_extra' => begin
 <link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />
 % end
 % content_for 'verso' => begin
@@ -8,6 +9,7 @@
 <nav><%== $query_taglist %></nav>
 % end
 % content_for 'recto' => begin
+<p class="total"><%= marky_total_records %> records in <%= param('db') %></p>
 <%== foil_theme_selector %>
 % end
 <h1>Search <%= param('db') %></h1>
