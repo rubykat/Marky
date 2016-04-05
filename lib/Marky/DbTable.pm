@@ -239,25 +239,35 @@ EOT
     {
         $self->{results_template} =<<'EOT';
 {?searchform [$searchform]}
+{?pagination [$pagination]}
 {?total <p>[$total] records found. Page [$p] of [$num_pages].</p>}
 {?query <div class="query">[$query]</div>}
 {?sql <p class="sql">[$sql]</p>}
 {?result <div class="results fancy">[$result]</div>}
 EOT
     }
+    if (!defined $self->{pagination_template})
+    {
+        $self->{pagination_template} =<<'EOT';
+<div class="pagination">
+<span class="prev">{?prev_page <a title="Prev" class="prevnext" href="[$location]/[$tq]?p=[$prev_page]&q=[$q]">}<span class="fa fa-chevron-left"></span> Prev{?prev_page </a>}</span>
+<span class="next">{?next_page <a title="Next" href="[$location]/[$tq]?p=[$next_page]&q=[$q]">}Next <span class="fa fa-chevron-right"></span>{?next_page </a>}</span>
+</div>
+EOT
+    }
     if (!defined $self->{searchform})
     {
         $self->{searchform} =<<'EOT';
 <div class="searchform">
-<form action="{$action}">
-<label class="fa fa-question">Any:</label> <input type="text" name="q" value="{$q}" size="38">
-<label class="fa fa-tags">Tags:</label> <input type="text" name="tags" value="{$tags}" size="38">
-{?selectP <label>Pg:</label> [$selectP]}
+<form class="searcher" action="{$action}">
+<span class="textin"><label class="fa fa-question">Any:</label> <input type="text" name="q" value="{$q}"/></span>
+<span class="textin"><label class="fa fa-tags">Tags:</label> <input type="text" name="tags" value="{$tags}"></span>
+<span class="selector"><label>Pg:</label> {$selectP}</span>
 <input type="submit" value="Search">
 </form>
-<form action="{$opt_url}">
-<label>N:</label> {$selectN}
-{?sorting <label>Sort:</label> [$sorting]}
+<form class="setter" action="{$opt_url}">
+<span class="selector"><label>N:</label> {$selectN}</span>
+<span class="selector"><label>Sort:</label> {$sorting}</span>
 <input type="submit" value="Set">
 </form></div>
 EOT
@@ -377,6 +387,10 @@ sub _process_request {
         %args,
         data=>$data,
     );
+    my $pagination = $self->_format_pagination(
+        %args,
+        data=>$data,
+    );
     my $result = $self->_format_rows(
         %args,
         rows=>$data->{rows},
@@ -413,6 +427,7 @@ sub _process_request {
             total=>$data->{total},
             num_pages=>$data->{num_pages},
             searchform=>$searchform,
+            pagination=>$pagination,
         },
         template=>$self->{results_template},
     );
@@ -420,6 +435,7 @@ sub _process_request {
     return { results=>$html,
         query_tags=>$query_tags,
         searchform=>$searchform,
+        pagination=>$pagination,
         total=>$data->{total},
         num_pages=>$data->{num_pages},
     };
@@ -446,10 +462,6 @@ sub _process_taglist {
         %args
     );
 
-    my $searchform = $self->_format_searchform(
-        %args,
-        data=>$data,
-    );
     my %all_tags = $self->_create_taglist(
         rows=>$data->{rows},
         total=>$data->{total},
@@ -492,10 +504,6 @@ sub _process_tagcloud {
         %args
     );
 
-    my $searchform = $self->_format_searchform(
-        %args,
-        data=>$data,
-    );
     my %all_tags = $self->_create_taglist(
         rows=>$data->{rows},
         total=>$data->{total},
@@ -992,6 +1000,64 @@ sub _format_searchform {
 
     return $searchform;
 } # _format_searchform
+
+=head2 _format_pagination
+
+Format the prev/next links.
+
+$result = $self->_format_pagination(
+    total=>$total,
+    tags_query=>$tags_query,
+    location=>$action_url);
+
+=cut
+
+sub _format_pagination {
+    my $self = shift;
+    my %args = @_;
+
+    my $data = $args{data};
+    my $location = $args{location};
+    my $tobj = Text::NeatTemplate->new();
+
+    my $total = $data->{total};
+    my $num_pages = $data->{num_pages};
+    if ($args{p} > $num_pages)
+    {
+        $args{p} = $num_pages;
+    }
+    if ($args{p} < 1)
+    {
+        $args{p} = 1;
+    }
+    my $prev_page = $args{p} - 1;
+    if ($prev_page < 1)
+    {
+        $prev_page = 0;
+    }
+    my $next_page = $args{p} + 1;
+    if ($next_page > $num_pages)
+    {
+        $next_page = 0;
+    }
+    my $tq = '';
+    if ($args{tags})
+    {
+        $tq = 'tags/' . $args{tags};
+    }
+
+    my $pagination = $tobj->fill_in(
+        data_hash=>{
+            %args,
+            tq=>$tq,
+            prev_page=>$prev_page,
+            next_page=>$next_page,
+        },
+        template=>$self->{pagination_template},
+    );
+
+    return $pagination;
+} # _format_pagination
 
 =head2 _format_rows
 

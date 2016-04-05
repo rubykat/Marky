@@ -234,7 +234,8 @@ sub _do_query {
         return undef;
     }
 
-    $c->content('footer',$res->{searchform});
+    $c->content('footer',$res->{pagination});
+    $c->content_for('footer',$res->{searchform});
     $c->stash('query_taglist', $res->{query_tags});
 
     $c->stash('results' => $res->{results});
