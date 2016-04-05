@@ -1,14 +1,14 @@
 package Marky;
 use Mojo::Base 'Mojolicious';
-use Mojo::Log;
+#use Mojo::Log;
 
 # This method will run once at server start
 sub startup {
     my $self = shift;
 
     $self->plugin('Config' => { file => "$FindBin::RealBin/../marky.conf" });
-    my $log_level = $self->config('log_level') || 'debug';
-    $self->log( Mojo::Log->new( path => "$FindBin::RealBin/../log/marky.log", level => $log_level ) );
+    #my $log_level = $self->config('log_level') || 'debug';
+    #$self->log( Mojo::Log->new( path => "$FindBin::RealBin/../log/marky.log", level => $log_level ) );
 
     $self->plugin('Marky::DbTableSet');
 
