@@ -235,6 +235,7 @@ sub _do_query {
     }
 
     $c->content('footer',$res->{pagination});
+    $c->content_for('footer',$res->{searchform});
     $c->stash('query_taglist', $res->{query_tags});
 
     $c->stash('results' => $res->{results});
@@ -463,11 +464,6 @@ sub _add_bookmark_form {
         return;
     }
 
-    # if there are tag fields in this database, grab a list of them
-    # for the hints in a datalist
-    my $tagfield = $self->{dbtables}->{$db}->tagfield();
-    my @tag_array = $self->{dbtables}->{$db}->tag_array();
-
     my %data = ();
     my @fields = $self->{edit_tables}->{$db}->fields();
     foreach my $fn (@fields)
@@ -481,8 +477,6 @@ sub _add_bookmark_form {
     my $add_url = $c->url_for("/db/$db/add");
     return $self->{edit_tables}->{$db}->bookmark_form(
         action=>$add_url,
-        tagfield=>$tagfield,
-        tag_array=>\@tag_array,
         %data,
     );
 } # _add_bookmark_form

@@ -169,15 +169,6 @@ EOT
 </textarea></div>
 EOT
             }
-            elsif ($col =~ /tags/i)
-            {
-                $self->{editform_template} .=<<"EOT";
-<div class="item">
-<label>$col</label> <input type="text" name="$col" value="{\$${col}}" size="50" {?${col}_datalist list="${col}Datalist"}/>
-{?${col}_datalist <datalist id="${col}Datalist">[\$${col}_datalist]</datalist>}
-</div>
-EOT
-            }
             else
             {
                 $self->{editform_template} .=<<"EOT";
@@ -210,21 +201,8 @@ sub _add_bookmark_form {
     my %args = @_;
 
     my $tobj = Text::NeatTemplate->new();
-    my $datalist_name = '';
-    my $datalist_str = '';
-    if ($args{tagfield})
-    {
-        $datalist_name = $args{tagfield} . '_datalist';
-        my @tags = @{$args{tag_array}};
-        foreach my $tag (@tags)
-        {
-            $datalist_str .= "<option value='$tag' />\n";
-        }
-    }
     my $form = $tobj->fill_in(
-        data_hash=>{%args,
-            $datalist_name=>$datalist_str,
-        },
+        data_hash=>{%args,},
         template=>$self->{editform_template},
     );
     return $form;

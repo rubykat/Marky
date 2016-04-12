@@ -134,37 +134,6 @@ sub tagcloud {
     return $self->_process_tagcloud(%args);
 } # tagcloud
 
-=head2 tag_array
-
-Query the database, return an array of all the tags
-
-=cut
-
-sub tag_array {
-    my $self = shift;
-    my %args = @_;
-
-    if (!$self->_connect())
-    {
-        return undef;
-    }
-
-    return $self->_process_tag_array(%args);
-} # tag_array
-
-=head2 tagfield
-
-Give the name of the tagfield.
-
-=cut
-
-sub tagfield {
-    my $self = shift;
-    my %args = @_;
-
-    return $self->{tagfield};
-} # tagfield
-
 =head2 total_records
 
 Query the database, return the total number of records.
@@ -513,34 +482,6 @@ sub _process_taglist {
         num_pages=>$data->{num_pages},
     };
 } # _process_taglist
-
-=head2 _process_tag_array
-
-Process the request, return array of all the tags.
-
-$dbtable->_process_tag_array(%args);
-
-=cut
-
-sub _process_tag_array {
-    my $self = shift;
-    my %args = @_;
-
-    my $dbh = $self->{dbh};
-    my $location = $args{location};
-    my $tobj = Text::NeatTemplate->new();
-
-    my $data = $self->_search(
-        %args
-    );
-
-    my %all_tags = $self->_create_taglist(
-        rows=>$data->{rows},
-        total=>$data->{total},
-    );
-    my @tag_array = sort keys %all_tags;
-    return @tag_array;
-} # _process_tag_array
 
 =head2 _process_tagcloud
 
