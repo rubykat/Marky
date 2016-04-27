@@ -6,7 +6,7 @@ use Mojo::Base 'Mojolicious';
 sub startup {
     my $self = shift;
 
-    $self->plugin('Config' => { file => "$FindBin::RealBin/../marky.conf" });
+    my $mojo_config = $self->plugin('Config' => { file => "$FindBin::RealBin/../marky.conf" });
     #my $log_level = $self->config('log_level') || 'debug';
     #$self->log( Mojo::Log->new( path => "$FindBin::RealBin/../log/marky.log", level => $log_level ) );
 
@@ -19,6 +19,7 @@ sub startup {
     }
     $self->plugin('Foil' => { add_prefixes => \@db_routes});
 
+    $self->plugin(NYTProf => $mojo_config);
     # -------------------------------------------
     # Config hypnotoad
 
