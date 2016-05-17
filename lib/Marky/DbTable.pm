@@ -199,6 +199,10 @@ sub _set_defaults {
     {
         die "No columns given";
     }
+    if (!defined $self->{sort_columns})
+    {
+        $self->{sort_columns} = $self->{columns};
+    }
     $self->{tagfield} = 'tags' if !defined $self->{tagfield};
     $self->{default_limit} = 100 if !defined $self->{default_limit};
 
@@ -963,7 +967,7 @@ sub _format_searchform {
     {
         push @os, "<select name='${db}_$sf'>";
         push @os, "<option value=''> </option>";
-        foreach my $s (sort @{$self->{columns}})
+        foreach my $s (sort @{$self->{sort_columns}})
         {
             if ($s eq $args{$sf})
             {
