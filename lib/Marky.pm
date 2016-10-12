@@ -6,7 +6,13 @@ use Mojo::Base 'Mojolicious';
 sub startup {
     my $self = shift;
 
-    my $mojo_config = $self->plugin('Config' => { file => "$FindBin::RealBin/../marky.conf" });
+    my $conf_file = "${FindBin::RealBin}/../marky.conf";
+    if (defined $ENV{MARKY_CONFIG} and -f $ENV{MARKY_CONFIG})
+    {
+        $conf_file = $ENV{MARKY_CONFIG};
+    }
+    print STDERR "CONFIG: $conf_file\n";
+    my $mojo_config = $self->plugin('Config' => { file => $conf_file });
     #my $log_level = $self->config('log_level') || 'debug';
     #$self->log( Mojo::Log->new( path => "$FindBin::RealBin/../log/marky.log", level => $log_level ) );
 
@@ -20,14 +26,6 @@ sub startup {
     $self->plugin('Foil' => { add_prefixes => \@db_routes});
 
     $self->plugin(NYTProf => $mojo_config);
-    # -------------------------------------------
-    # Config hypnotoad
-
-    $self->config(hypnotoad => {
-            pid_file => "$FindBin::RealBin/marky.pid",
-            listen => ['http://*:3001'],
-            proxy => 1,
-        });
 
     # -------------------------------------------
     $self->secrets([qw(etunAvIlyiejUnnodwyk supernumary55)]);
