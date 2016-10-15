@@ -25,6 +25,8 @@ Querying one database table, returning result.
 
 use Mojo::Base 'Mojolicious::Plugin';
 use Marky::DbTable;
+use Marky::DbTable::SQLite;
+use Marky::DbTable::Xapian;
 use Marky::Bookmarker;
 use common::sense;
 use DBI;
@@ -148,7 +150,15 @@ sub _init {
     my %aliases = ();
     foreach my $t (sort keys %{$app->config->{tables}})
     {
-        $self->{dbtables}->{$t} = Marky::DbTable->new(%{$app->config->{tables}->{$t}});
+        if (exists $app->config->{tables}->{$t}->{dbtype}
+                and $app->config->{tables}->{$t}->{dbtype} eq 'Xapian')
+        {
+            $self->{dbtables}->{$t} = Marky::DbTable::Xapian->new(%{$app->config->{tables}->{$t}});
+        }
+        else
+        {
+            $self->{dbtables}->{$t} = Marky::DbTable::SQLite->new(%{$app->config->{tables}->{$t}});
+        }
         if (exists $app->config->{tables}->{$t}->{editing}
                 and ref $app->config->{tables}->{$t}->{editing} eq 'HASH')
         {
