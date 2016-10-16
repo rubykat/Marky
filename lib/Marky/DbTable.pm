@@ -191,6 +191,10 @@ sub _set_defaults {
     $self->{user} = '' if !defined $self->{user};
     $self->{password} = '' if !defined $self->{password};
 
+    if (!defined $self->{database})
+    {
+        die "No database given";
+    }
     if (!defined $self->{table})
     {
         die "No table given";
@@ -325,20 +329,29 @@ sub _connect {
     return 1;
 } # _connect
 
-=head2 _do_select
+=head2 _search
 
-Process a simple SELECT statement by iself.
-Mainly used for testing purposes
+Search the database;
+returns the total, the query, and the results for the current page.
 
-$results = $dbtable->_do_select($sql);
+$hashref = $dbtable->_search(
+q=>$query_string,
+tags=>$tags,
+p=>$p,
+n=>$items_per_page,
+sort_by=>$order_by,
+);
 
 =cut
 
-sub _do_select {
+sub _search {
     my $self = shift;
-    my $q = shift;
+    my %args = @_;
 
     my $dbh = $self->{dbh};
+
+    # first find the total
+    my $q = $self->_query_to_sql(%args,get_total=>1);
     my $sth = $dbh->prepare($q);
     if (!$sth)
     {
@@ -351,14 +364,46 @@ sub _do_select {
         $self->{error} = "FAILED to execute '$q' $DBI::errstr";
         return undef;
     }
-    my @results = ();
-    my $row;
-    while ($row = $sth->fetchrow_hashref)
+    my @ret_rows=();
+    my $total = 0;
+    my @row;
+    while (@row = $sth->fetchrow_array)
     {
-        push @results, $row;
+        $total = $row[0];
     }
-    return \@results;
-} # _do_select
+    my $num_pages = 1;
+    if ($args{n})
+    {
+        $num_pages = ceil($total / $args{n});
+        $num_pages = 1 if $num_pages < 1;
+    }
+
+    if ($total > 0)
+    {
+        $q = $self->_query_to_sql(%args,total=>$total);
+        $sth = $dbh->prepare($q);
+        if (!$sth)
+        {
+            $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
+            return undef;
+        }
+        $ret = $sth->execute();
+        if (!$ret)
+        {
+            $self->{error} = "FAILED to execute '$q' $DBI::errstr";
+            return undef;
+        }
+
+        while (my $hashref = $sth->fetchrow_hashref)
+        {
+            push @ret_rows, $hashref;
+        }
+    }
+    return {rows=>\@ret_rows,
+        total=>$total,
+        num_pages=>$num_pages,
+        sql=>$q};
+} # _search
 
 =head2 _process_request
 
@@ -823,82 +868,6 @@ sub _query_to_sql {
 
     return $q;
 } # _query_to_sql
-
-=head2 _search
-
-Search the database;
-returns the total, the query, and the results for the current page.
-
-$hashref = $dbtable->_search(
-q=>$query_string,
-tags=>$tags,
-p=>$p,
-n=>$items_per_page,
-sort_by=>$order_by,
-);
-
-=cut
-
-sub _search {
-    my $self = shift;
-    my %args = @_;
-
-    my $dbh = $self->{dbh};
-
-    # first find the total
-    my $q = $self->_query_to_sql(%args,get_total=>1);
-    my $sth = $dbh->prepare($q);
-    if (!$sth)
-    {
-        $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
-        return undef;
-    }
-    my $ret = $sth->execute();
-    if (!$ret)
-    {
-        $self->{error} = "FAILED to execute '$q' $DBI::errstr";
-        return undef;
-    }
-    my @ret_rows=();
-    my $total = 0;
-    my @row;
-    while (@row = $sth->fetchrow_array)
-    {
-        $total = $row[0];
-    }
-    my $num_pages = 1;
-    if ($args{n})
-    {
-        $num_pages = ceil($total / $args{n});
-        $num_pages = 1 if $num_pages < 1;
-    }
-
-    if ($total > 0)
-    {
-        $q = $self->_query_to_sql(%args,total=>$total);
-        $sth = $dbh->prepare($q);
-        if (!$sth)
-        {
-            $self->{error} = "FAILED to prepare '$q' $DBI::errstr";
-            return undef;
-        }
-        $ret = $sth->execute();
-        if (!$ret)
-        {
-            $self->{error} = "FAILED to execute '$q' $DBI::errstr";
-            return undef;
-        }
-
-        while (my $hashref = $sth->fetchrow_hashref)
-        {
-            push @ret_rows, $hashref;
-        }
-    }
-    return {rows=>\@ret_rows,
-        total=>$total,
-        num_pages=>$num_pages,
-        sql=>$q};
-} # _search
 
 =head2 _format_searchform
 
