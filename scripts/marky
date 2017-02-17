@@ -22,14 +22,14 @@ use common::sense;
 use FindBin '$Bin';
 use lib "$Bin/../lib";
 use Marky;
-#use Marky::Generator;
+use Marky::Generator;
 use Mojolicious;
 
 # Check commands
 if (defined $ARGV[0] and $ARGV[0] eq 'init')
 {
     print "generating marky boilerplate...\n";
-    Marky->new->init;
+    Marky::Generator->new->init;
     print "done.\n";
     exit;
 }
