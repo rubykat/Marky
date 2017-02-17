@@ -16,22 +16,31 @@ Bookmarking and Tutorial Library application.
 =cut
 
 use Mojo::Base 'Mojolicious';
-use FindBin;
-#use Mojo::Log;
+use Path::Tiny;
 
 # This method will run once at server start
 sub startup {
     my $self = shift;
 
-    my $conf_file = "${FindBin::RealBin}/../marky.conf";
+    # -------------------------------------------
+    # Configuration
+    # check:
+    # * current working directory
+    # * parent of CWD
+    # -------------------------------------------
+    my $conf_basename = "marky.conf";
+    my $conf_file = path(Path::Tiny->cwd, $conf_basename);
+    if (! -f $conf_file)
+    {
+        $conf_file = path(Path::Tiny->cwd->parent, $conf_basename);
+    }
+    # the MARKY_CONFIG environment variable overrides the default
     if (defined $ENV{MARKY_CONFIG} and -f $ENV{MARKY_CONFIG})
     {
         $conf_file = $ENV{MARKY_CONFIG};
     }
     print STDERR "CONFIG: $conf_file\n";
     my $mojo_config = $self->plugin('Config' => { file => $conf_file });
-    #my $log_level = $self->config('log_level') || 'debug';
-    #$self->log( Mojo::Log->new( path => "$FindBin::RealBin/../log/marky.log", level => $log_level ) );
 
     $self->plugin('Marky::DbTableSet');
 
