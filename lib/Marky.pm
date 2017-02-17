@@ -12,6 +12,11 @@ Marky - web application for bookmark databases
 =head1 DESCRIPTION
 
 Bookmarking and Tutorial Library application.
+This uses
+Mojolicious
+Mojolicious::Plugin::Foil
+
+Font Awesome by Dave Gandy - http://fontawesome.io
 
 =cut
 
