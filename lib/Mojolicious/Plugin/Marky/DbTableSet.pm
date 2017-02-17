@@ -1,16 +1,9 @@
 package Mojolicious::Plugin::Marky::DbTableSet;
 
+#ABSTRACT: Mojolicious::Plugin::Marky::DbTableSet - querying one database table
 =head1 NAME
 
 Mojolicious::Plugin::Marky::DbTableSet - querying one database table
-
-=head1 VERSION
-
-This describes version 0.1 of Marky
-
-=cut
-
-our $VERSION = '0.1';
 
 =head1 SYNOPSIS
 

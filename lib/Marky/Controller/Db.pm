@@ -1,4 +1,20 @@
 package Marky::Controller::Db;
+
+#ABSTRACT: Marky::Controller::Db - Database controller for Marky
+=head1 NAME
+
+Marky::Controller::Db - Database controller for Marky
+
+=head1 SYNOPSIS
+
+    use Marky::Controller::Db;
+
+=head1 DESCRIPTION
+
+Database controller for Marky
+
+=cut
+
 use Mojo::Base 'Mojolicious::Controller';
 
 sub tables {

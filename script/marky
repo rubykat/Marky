@@ -1,14 +1,62 @@
 #!/usr/bin/env perl
+#
+=head1 NAME
 
-use strict;
-use warnings;
+marky - bookmark web application
 
-use FindBin;
-BEGIN {
-    unshift @INC, "/home/kat/files/git/public/perl/Mojolicious-Plugin-Foil/lib";
-    unshift @INC, "$FindBin::RealBin/../lib";
+=head1 SYNOPSIS
+
+marky COMMAND
+
+=head1 DESCRIPTION
+
+Marky is a web application for searching a bookmarks database.
+It uses the Mojolicious framework.
+It understands SQLite databases.
+
+=cut
+
+use common::sense;
+use FindBin '$Bin';
+use lib "$Bin/../lib";
+use Marky;
+#use Marky::Generator;
+use Mojolicious;
+
+# Check commands
+if (defined $ARGV[0] and $ARGV[0] eq 'init')
+{
+    print "generating marky boilerplate...\n";
+    Marky->new->init;
+    print "done.\n";
+    exit;
+}
+elsif (defined $ARGV[0] and $ARGV[0] eq 'version') {
+    print "This is Marky $Marky::VERSION";
+    print " using Mojolicious $Mojolicious::VERSION on perl $^V\n";
+    # don't exit, we want the mojo version too
+}
+elsif (defined $ARGV[0] and $ARGV[0] eq 'help') {
+    print <<'EOD';
+USAGE: marky COMMAND
+
+Marky is a web-app which searches bookmark databases.
+Commands:
+
+    init        Generates a basic marky directory structure in your
+                current working directory, which includes:
+
+                    marky.conf  an example config file (Perl like)
+                    webapp.pl   a mojolicious web app which serves your files
+                    public      public files like a stylesheet
+
+    version     prints the Marky version you are using
+
+For more help please check out the docs: perldoc Marky
+EOD
+    # don't exit, we want the mojo help too
 }
 
-# Start command line interface for application
+# Otherwisr start command line interface for application
 require Mojolicious::Commands;
 Mojolicious::Commands->start_app('Marky');

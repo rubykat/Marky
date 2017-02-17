@@ -1,9 +1,0 @@
-% layout 'foil';
-% content_for 'verso' => begin
-<nav><%== marky_db_related_list %></nav>
-% end
-% content_for 'recto' => begin
-<%== foil_theme_selector %>
-% end
-<h1>Error: <%= param('db') %></h1>
-<%== $errormsg %>

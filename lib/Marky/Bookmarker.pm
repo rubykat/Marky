@@ -1,16 +1,9 @@
 package Marky::Bookmarker;
 
+# ABSTRACT: Marky::Bookmarker - adding bookmarks
 =head1 NAME
 
 Marky::Bookmarker - adding bookmarks
-
-=head1 VERSION
-
-This describes version 0.1 of Marky::Bookmarker
-
-=cut
-
-our $VERSION = '0.1';
 
 =head1 SYNOPSIS
 
