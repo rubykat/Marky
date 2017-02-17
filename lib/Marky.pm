@@ -1,6 +1,6 @@
-# ABSTRACT: web application for bookmark databases
 package Marky;
 
+# ABSTRACT: web application for bookmark databases
 =head1 NAME
 
 Marky - web application for bookmark databases

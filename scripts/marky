@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
-#
+
+# ABSTRACT: marky - bookmark web application
+# PODNAME: marky
 =head1 NAME
 
 marky - bookmark web application
