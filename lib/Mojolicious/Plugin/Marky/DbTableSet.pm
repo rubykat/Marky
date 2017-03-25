@@ -182,6 +182,7 @@ sub _do_query {
     my $tags = $c->param('tags');
     my $q = $c->param('q');
     my $p = $c->param('p');
+    my $where = $c->param('where');
 
     my $n = $c->session('n');
     my $sort_by = $c->session("${db}_sort_by");
@@ -213,6 +214,7 @@ sub _do_query {
         db=>$db,
         q=>$q,
         tags=>$tags,
+        where=>$where,
         n=>$n,
         p=>$p,
         sort_by=>$sort_by,

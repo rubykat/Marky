@@ -171,15 +171,6 @@ Set the defaults for the object if they are not defined already.
 =cut
 sub _set_defaults {
     my $self = shift;
-    my $conf = shift;
-
-    foreach my $key (keys %{$conf})
-    {
-        if (defined $conf->{$key})
-        {
-            $self->{$key} = $conf->{$key};
-        }
-    }
 
     $self->{user} = '' if !defined $self->{user};
     $self->{password} = '' if !defined $self->{password};
@@ -272,6 +263,13 @@ EOT
 <input type="submit" value="Set">
 </form></div>
 EOT
+        if ($self->{use_where})
+        {
+            my $whereness =<<'EOW';
+<div class="where"><label>Where:</label><textarea name="where" rows="3" cols="80">{$where}</textarea></div>
+EOW
+            $self->{searchform} =~ s/(<input type="submit" value="Search">)/${whereness}$1/;
+        }
     }
     return $self;
 
@@ -763,6 +761,7 @@ $sql = $dbtable->_query_to_sql(
 q=>$query_string,
 tags=>$tags,
 p=>$p,
+where=>$where,
 n=>$items_per_page,
 sort_by=>$order_by,
 sort_by2=>$order_by2,
@@ -829,6 +828,11 @@ sub _query_to_sql {
     {
         my $clause = $self->_build_where(field=>'', q=>$args{q});
         push @and_clauses, $clause;
+    }
+    # a freeform where condition
+    if ($args{where})
+    {
+        push @and_clauses, $args{where};
     }
     # if there's an extra condition in the configuration, add it here
     if ($self->{extra_cond})
