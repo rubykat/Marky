@@ -218,13 +218,13 @@ EOT
     if (!defined $self->{tag_query_template})
     {
         $self->{tag_query_template} =<<'EOT';
-<a title="Remove tag" href="{$url}/{?tags_query [$tags_query]}?deltag={$tag}{?q &q=[$q]}{?p &p=[$p]}" class="tag button"><span class="fa fa-tag"></span> {$tag} <span class="remove fa fa-remove"></span></a>
+<a title="Remove tag" href="{$url}/{?tags_query [$tags_query]}?deltag={$tag}{?q &q=[$q]}{?p &p=[$p]}{?where &where=[$where]}" class="tag button"><span class="fa fa-tag"></span> {$tag} <span class="remove fa fa-remove"></span></a>
 EOT
     }
     if (!defined $self->{q_query_template})
     {
         $self->{q_query_template} =<<'EOT';
-<a title="Remove term" href="{$url}/{?tags_query tags/[$tags_query]}?delterm={$qterm}{?q &q=[$q]}{?p &p=[$p]}" class="tag button"><span class="fa fa-question"></span> {$qterm} <span class="remove fa fa-close"></span></a>
+<a title="Remove term" href="{$url}/{?tags_query tags/[$tags_query]}?delterm={$qterm}{?q &q=[$q]}{?p &p=[$p]}{?where &where=[$where]}" class="tag button"><span class="fa fa-question"></span> {$qterm} <span class="remove fa fa-close"></span></a>
 EOT
     }
     if (!defined $self->{results_template})
@@ -242,8 +242,8 @@ EOT
     {
         $self->{pagination_template} =<<'EOT';
 <div class="pagination">
-<span class="prev">{?prev_page <a title="Prev" class="prevnext" href="[$location]/[$tq]?p=[$prev_page]&q=[$q]">}<span class="fa fa-chevron-left"></span> Prev{?prev_page </a>}</span>
-<span class="next">{?next_page <a title="Next" href="[$location]/[$tq]?p=[$next_page]&q=[$q]">}Next <span class="fa fa-chevron-right"></span>{?next_page </a>}</span>
+<span class="prev">{?prev_page <a title="Prev" class="prevnext" href="[$location]/[$tq]?p=[$prev_page]&q=[$q]&where=[$where]">}<span class="fa fa-chevron-left"></span> Prev{?prev_page </a>}</span>
+<span class="next">{?next_page <a title="Next" href="[$location]/[$tq]?p=[$next_page]&q=[$q]&where=[$where]">}Next <span class="fa fa-chevron-right"></span>{?next_page </a>}</span>
 </div>
 EOT
     }
