@@ -53,8 +53,22 @@ sub startup {
     print STDERR "CONFIG: $conf_file\n";
     my $mojo_config = $self->plugin('Config' => { file => $conf_file });
 
+    # -------------------------------------------
+    # Application public directory
+    #
+    # For doing things like displaying images; the most portable method of
+    # doing this is to have a "local" public directory which has softlinks to
+    # the various desired directories.
+    # -------------------------------------------
+    if (defined $mojo_config->{public_dir}
+            and $mojo_config->{public_dir}
+            and -d $mojo_config->{public_dir})
+    {
+        push @{$self->static->paths}, $mojo_config->{public_dir};
+    }
 
-    # Append public directories
+    # -------------------------------------------
+    # Append Marky public directory
     # Find the Marky "public" directory
     # It could be relative to the CWD
     # It could be relative to the calling program
@@ -75,7 +89,6 @@ sub startup {
     if (-d $pubdir)
     {
         push @{$self->static->paths}, $pubdir;
-        print STDERR "PUBLIC: $pubdir\n";
     }
  
     # -------------------------------------------

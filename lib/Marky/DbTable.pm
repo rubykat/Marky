@@ -172,6 +172,8 @@ Set the defaults for the object if they are not defined already.
 sub _set_defaults {
     my $self = shift;
 
+    $self->{route_prefix} = '' if !defined $self->{route_prefix};
+
     $self->{user} = '' if !defined $self->{user};
     $self->{password} = '' if !defined $self->{password};
 
@@ -1060,6 +1062,7 @@ sub _format_rows {
             in_list=>0,
             tags_array=>\@tags);
         $row_hash->{all_tags} = $tags_str;
+        $row_hash->{route_prefix} = $self->{route_prefix};
         my $text = $tobj->fill_in(data_hash=>$row_hash,
                                   template=>$self->{row_template});
         push @out, $text;

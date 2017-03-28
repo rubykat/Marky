@@ -136,9 +136,9 @@ sub _init {
     my $app = shift;
     my $conf = shift;
 
+    $self->{route_prefix} = $app->config->{route_prefix};
     $self->{dbtables} = {};
     $self->{edit_tables} = {};
-    my %aliases = ();
     foreach my $t (sort keys %{$app->config->{tables}})
     {
         $self->{dbtables}->{$t} = Marky::DbTable->new(%{$app->config->{tables}->{$t}});
@@ -147,16 +147,7 @@ sub _init {
         {
             $self->{edit_tables}->{$t} = Marky::Bookmarker->new(%{$app->config->{tables}->{$t}->{editing}});
         }
-        if (exists $app->config->{tables}->{$t}->{public_dir})
-        {
-            my $pdir = $app->config->{tables}->{$t}->{public_dir};
-            if (-d $pdir)
-            {
-                $aliases{"/db/${t}/view"} = $pdir;
-            }
-        }
     }
-    $app->plugin('alias', \%aliases);
     return $self;
 } # _init
 
