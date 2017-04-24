@@ -1056,7 +1056,11 @@ sub _format_rows {
     foreach my $row_hash (@rows)
     {
         # format the tags, then format the row
-        my @tags = split(/\|/, $row_hash->{$self->{tagfield}});
+        # may need to remove trailing empty tags
+        my $proper_tags = $row_hash->{$self->{tagfield}};
+        $proper_tags =~ s/^[|]//;
+        $proper_tags =~ s/[|]$//;
+        my @tags = split(/\|/, $proper_tags);
         my $tags_str = $self->_format_tag_collection(
             %args,
             in_list=>0,
