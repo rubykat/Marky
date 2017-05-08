@@ -214,7 +214,7 @@ EOT
     if (!defined $self->{tags_template})
     {
         $self->{tags_template} =<<'EOT';
-<a href="{$url}/{?tags_query [$tags_query]}{?qquery ?[$qquery]}" class="tag {?not_in_list button}">{?not_in_list <span class="fa fa-tag"></span>} {$tag}{?num_tags  ([$num_tags])}</a>
+<a href="{$url}/{?tags_query [$tags_query]}{?qquery ?[$qquery]}" class="tag {?not_in_list button}">{?not_in_list <span class="fa fa-tag"></span>} {$tag_label}{?num_tags  ([$num_tags])}</a>
 EOT
     }
     if (!defined $self->{tag_query_template})
@@ -1222,6 +1222,8 @@ sub _format_tag_collection {
     my @out = ();
     foreach my $tag (@tags)
     {
+        my $tag_label = $tag;
+        $tag_label =~ s/-/ /g; # remove dashes
         my $tq = '';
         if (!$tags_query)
         {
@@ -1238,6 +1240,7 @@ sub _format_tag_collection {
         }
         push @out, "<li>" if $args{in_list};
         push @out, $tobj->fill_in(data_hash=>{tag=>$tag,
+            tag_label=>$tag_label,
             num_tags=>(defined $args{all_tags} ? $args{all_tags}->{$tag} : undef),
             in_list=>$args{in_list},
             not_in_list=>!$args{in_list},
