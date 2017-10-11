@@ -19,7 +19,7 @@ where they can then be added to the database by stickerx.
 =cut
 
 use common::sense;
-use File::Serialize;
+use YAML::Any qw(DumpFile);
 use Path::Tiny;
 use Text::NeatTemplate;
 use POSIX qw(strftime);
@@ -276,7 +276,7 @@ sub _save_new_bookmark {
     my $filename = $self->_construct_filename(title=>$data->{$self->{titlefield}});
     my $bm_dir = path($self->{bookmark_dir});
     my $fullname = $bm_dir->child($filename)->stringify;
-    serialize_file $fullname => $data;
+    DumpFile($fullname, $data);
 
     if (-x $self->{update_script})
     {
