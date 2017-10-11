@@ -1,0 +1,109 @@
+{
+    defaults => {
+        title => 'Marky',
+        footer => 'Marky FOOT',
+        db => 'craft',
+    },
+    hypnotoad => {
+        pid_file => app->home->rel_file("marky.pid"),
+        listen => ['http://*:3001'],
+        proxy => 1,
+    },
+#    nytprof => {
+#        nytprofhtml_path => '/usr/bin/nytprofhtml',
+#        profiles_dir => app->home->rel_file("nytprof"),
+#        allow_production => 1,
+#    },
+    foil => {
+        "localhost:3000" => {
+            name => "morbo",
+            default_theme => 'gblue',
+            navbar_host => 'localhost:81',
+            navbar_links => [qw(
+                /action/
+                /address/
+                /docs/
+                /episodes/
+                /fanfic/
+                /gallery/
+                /gusto/
+                /harmony/
+                /listfont/
+                /profic/
+                /stories/
+                /text/
+                /wiki/
+                )],
+        },
+        "localhost:3001" => {
+            name => "hypnotoad",
+            logo_dark_url => app->url_for("/css/logos/marky_dark.png"),
+            logo_light_url => app->url_for("/css/logos/marky_light.png"),
+            default_theme => 'cloud2',
+            navbar_host => 'localhost:81',
+            navbar_links => [qw(
+                /action/
+                /address/
+                /docs/
+                /episodes/
+                /fanfic/
+                /gallery/
+                /gusto/
+                /harmony/
+                /listfont/
+                /profic/
+                /stories/
+                /text/
+                /wiki/
+                )],
+        },
+        "localhost" => {
+            name => "Local",
+            logo_dark_url => app->url_for("/css/logos/myspace_logo_dark.png"),
+            logo_light_url => app->url_for("/css/logos/myspace_logo_light.png"),
+            default_theme => 'matrix',
+            navbar_host => 'iwww.localhost',
+            navbar_links => [qw(
+                /about/
+                /computers/
+                /contact/
+                /events/
+                /fandom/
+                /fiction/
+                /games/
+                /graphics/
+                /gusto/
+                /links/
+                /lists/
+                /sitemap/
+                /reviews/
+                /search/
+                /zines/
+                )],
+        },
+    },
+    tables => {
+        craft => {
+            database => '/home/my/websites/myplay/collections/craft/tags.sql',
+            public_dir => '/home/my/websites/myplay/collections/craft/contents/',
+            table => 'filetable_pr',
+            columns => [qw(title alt_title url fileurl description tags grouping linkdate)],
+            default_sort => [qw(grouping title)],
+            show_sql => 1,
+            row_template => '
+<li{?private  class="private"}>
+{?thumburl <div class="thumbnail"><a href="/db/craft/view[$thumburl]"><img style="height:150px;" src="/db/craft/view[$thumburl]" alt="[$title]"/></a></div>}
+<div class="linkcontainer">
+<div class="linktitle"><span class="grouping">{$grouping}</span> {?has_download <a href="/db/craft/view[$fileurl]" title="[$fileurl]">}{?alt_title [$alt_title]!![$title]}{?has_download </a>}</div>
+{?url <div class="linkurl"><a href="[$url]" title="[$url]">[$title]</a></div>}
+<div class="linkdescription">
+{?description [$description:html]}
+</div>
+<div class="details">{$linkdate}</div>
+{?all_tags <div class="linktaglist">[$all_tags]</div>}
+</div>
+</li>
+',
+        },
+    },
+}
