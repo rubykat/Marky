@@ -150,7 +150,7 @@ __DATA__
 @@ add_bookmark.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/bookmark.css" type="text/css" />
 % end
@@ -179,7 +179,7 @@ __DATA__
 @@ results.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/results.css" type="text/css" />
 % end
@@ -197,7 +197,7 @@ __DATA__
 @@ save_bookmark.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/bookmark.css" type="text/css" />
 % end
@@ -215,7 +215,7 @@ __DATA__
 @@ settings.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 % end
 % content_for 'verso' => begin
@@ -230,7 +230,7 @@ __DATA__
 @@ tables.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 % end
 % content_for 'verso' => begin
@@ -245,7 +245,7 @@ __DATA__
 @@ tagcloud.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 % end
 % content_for 'verso' => begin
@@ -261,7 +261,7 @@ __DATA__
 @@ taglist.html.ep
 % layout 'foil';
 % content_for 'head_extra' => begin
-<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome.min.css" type="text/css" />
+<link rel="stylesheet" href="<%= url_for('/css') %>/fa/css/font-awesome-min.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/marky.css" type="text/css" />
 <link rel="stylesheet" href="<%= url_for('/css') %>/taglist.css" type="text/css" />
 % end
