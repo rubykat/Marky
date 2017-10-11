@@ -103,7 +103,7 @@ sub startup {
     }
     $self->plugin('Foil' => { add_prefixes => \@db_routes});
 
-    $self->plugin(NYTProf => $mojo_config);
+    #$self->plugin(NYTProf => $mojo_config);
 
     # -------------------------------------------
     # Templates
