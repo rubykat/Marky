@@ -25,6 +25,7 @@ use Text::NeatTemplate;
 use YAML::Any;
 use POSIX qw(ceil);
 use HTML::TagCloud;
+use List::Util qw(shuffle);
 use Mojo::URL;
 
 =head1 METHODS
@@ -333,6 +334,8 @@ tags=>$tags,
 p=>$p,
 n=>$items_per_page,
 sort_by=>$order_by,
+sort_by2=>$order_by2,
+sort_by3=>$order_by3,
 );
 
 =cut
@@ -779,8 +782,16 @@ sub _query_to_sql {
     my $p = $args{p};
     my $items_per_page = $args{n};
     my $total = ($args{total} ? $args{total} : 0);
+    # RANDOM sort overrides all other sorts (because it doesn't make sense otherwise)
+    # RANDOM also overrides the default sort.
     my $order_by = '';
-    if ($args{sort_by} and $args{sort_by2} and $args{sort_by3})
+    if (($args{sort_by} and $args{sort_by} eq 'RANDOM')
+            or ($args{sort_by2} and $args{sort_by2} eq 'RANDOM')
+            or ($args{sort_by3} and $args{sort_by3} eq 'RANDOM'))
+    {
+        $order_by = 'RANDOM()';
+    }
+    elsif ($args{sort_by} and $args{sort_by2} and $args{sort_by3})
     {
         $order_by = join(', ', $args{sort_by}, $args{sort_by2}, $args{sort_by3});
     }
@@ -945,14 +956,18 @@ sub _format_searchform {
             {
                 push @os, "<option value='$s'>$s</option>";
             }
-            my $s_desc = "${s} DESC";
-            if ($s_desc eq $args{$sf})
+            # sert DESCending makes no sense for RANDOM
+            if ($s ne 'RANDOM')
             {
-                push @os, "<option value='$s_desc' selected>$s_desc</option>";
-            }
-            else
-            {
-                push @os, "<option value='$s_desc'>$s_desc</option>";
+                my $s_desc = "${s} DESC";
+                if ($s_desc eq $args{$sf})
+                {
+                    push @os, "<option value='$s_desc' selected>$s_desc</option>";
+                }
+                else
+                {
+                    push @os, "<option value='$s_desc'>$s_desc</option>";
+                }
             }
         }
         push @os, '</select>';
