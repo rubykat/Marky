@@ -50,7 +50,7 @@ sub startup {
     {
         $conf_file = $ENV{MARKY_CONFIG};
     }
-    print STDERR "CONFIG: $conf_file\n";
+    print STDERR "Marky::VERSION $Marky::VERSION\n";
     my $mojo_config = $self->plugin('Config' => { file => $conf_file });
 
     # -------------------------------------------
