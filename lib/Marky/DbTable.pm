@@ -336,6 +336,7 @@ n=>$items_per_page,
 sort_by=>$order_by,
 sort_by2=>$order_by2,
 sort_by3=>$order_by3,
+sort_by4=>$order_by4,
 );
 
 =cut
@@ -771,6 +772,7 @@ n=>$items_per_page,
 sort_by=>$order_by,
 sort_by2=>$order_by2,
 sort_by3=>$order_by3,
+sort_by4=>$order_by4,
 );
 
 =cut
@@ -787,9 +789,14 @@ sub _query_to_sql {
     my $order_by = '';
     if (($args{sort_by} and $args{sort_by} eq 'RANDOM')
             or ($args{sort_by2} and $args{sort_by2} eq 'RANDOM')
-            or ($args{sort_by3} and $args{sort_by3} eq 'RANDOM'))
+            or ($args{sort_by3} and $args{sort_by3} eq 'RANDOM')
+            or ($args{sort_by4} and $args{sort_by4} eq 'RANDOM'))
     {
         $order_by = 'RANDOM()';
+    }
+    elsif ($args{sort_by} and $args{sort_by2} and $args{sort_by3} and $args{sort_by4})
+    {
+        $order_by = join(', ', $args{sort_by}, $args{sort_by2}, $args{sort_by3}, $args{sort_by4});
     }
     elsif ($args{sort_by} and $args{sort_by2} and $args{sort_by3})
     {
@@ -942,7 +949,7 @@ sub _format_searchform {
     my $db = $args{db};
     my $sorting = '';
     @os = ();
-    foreach my $sf (qw(sort_by sort_by2 sort_by3))
+    foreach my $sf (qw(sort_by sort_by2 sort_by3 sort_by4))
     {
         push @os, "<select name='${db}_$sf'>";
         push @os, "<option value=''> </option>";
