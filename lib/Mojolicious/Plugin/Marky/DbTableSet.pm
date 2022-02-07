@@ -179,6 +179,7 @@ sub _do_query {
     my $sort_by = $c->session("${db}_sort_by");
     my $sort_by2 = $c->session("${db}_sort_by2");
     my $sort_by3 = $c->session("${db}_sort_by3");
+    my $sort_by4 = $c->session("${db}_sort_by4");
 
     my $delterm = $c->param('delterm');
     if ($delterm && $q)
@@ -211,6 +212,7 @@ sub _do_query {
         sort_by=>$sort_by,
         sort_by2=>$sort_by2,
         sort_by3=>$sort_by3,
+        sort_by4=>$sort_by4,
         show_sql=>$app->config->{tables}->{$db}->{show_sql},
     );
     if (!defined $res)
@@ -370,6 +372,7 @@ sub _set_options {
         push @fields, "${db}_sort_by";
         push @fields, "${db}_sort_by2";
         push @fields, "${db}_sort_by3";
+        push @fields, "${db}_sort_by4";
     }
     my %fields_set = ();
     foreach my $field (@fields)
@@ -416,6 +419,7 @@ sub _settings {
     push @fields, "${db}_sort_by";
     push @fields, "${db}_sort_by2";
     push @fields, "${db}_sort_by3";
+    push @fields, "${db}_sort_by4";
     
     my @out = ();
     foreach my $field (@fields)
