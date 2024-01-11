@@ -20,24 +20,28 @@
 }
 .searchform .tagsin input[type="text"] {
     display: inline-block;
-    width: 78%;
+    width: 88%;
 }
+/*
 .searchform .tagsin label {
     display: inline-block;
-    width: 17%;
+    width: 10%;
 }
+*/
 .searchform .anyin {
     display: inline-block;
-    width: 38%;
+    width: 85%;
 }
 .searchform .anyin input[type="text"] {
     display: inline-block;
-    width: 78%;
+    width: 88%;
 }
+/*
 .searchform .anyin label {
     display: inline-block;
-    width: 17%;
+    width: 10%;
 }
+*/
 .searchform .searcher .selector,
 .searchform .searcher input[type="submit"] {
     display: inline-block;
