@@ -255,8 +255,8 @@ EOT
         $self->{searchform} =<<'EOT';
 <div class="searchform">
 <form class="searcher" action="{$action}">
-<span class="textin"><label class="fa fa-question">Any:</label> <input type="text" name="q" value="{$q}"/></span>
-<span class="textin"><label class="fa fa-tags">Tags:</label> <input type="text" name="tags" value="{$tags}"></span>
+<span class="tagsin"><label class="fa fa-tags">Tags:</label> <input type="text" name="tags" value="{$tags}"></span>
+<span class="anyin"><label class="fa fa-question">Any:</label> <input type="text" name="q" value="{$q}"/></span>
 <span class="selector"><label>Pg:</label> {$selectP}</span>
 <input type="submit" value="Search">
 </form>
